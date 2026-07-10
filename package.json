@@ -1,0 +1,33 @@
+{
+  "name": "@noclaf/skills",
+  "version": "0.1.0",
+  "description": "Vault de conhecimento do noclaf — skills, commands, agents e dependências consumidos pelo @noclaf/mcp.",
+  "type": "module",
+  "scripts": {
+    "ids": "node scripts/assign-ids.mjs"
+  },
+  "files": [
+    "commands",
+    "skills",
+    "agents",
+    "dependencies",
+    "index.md",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Falcao-Tech/noclaf-skills.git"
+  },
+  "homepage": "https://github.com/Falcao-Tech/noclaf-skills#readme",
+  "keywords": [
+    "noclaf",
+    "skills",
+    "commands",
+    "mcp",
+    "agent-skills"
+  ],
+  "license": "MIT"
+}

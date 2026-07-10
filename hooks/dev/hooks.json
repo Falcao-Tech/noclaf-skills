@@ -1,0 +1,12 @@
+{
+  "hooks": [
+    {
+      "id": 1,
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "description": "Bloqueia `git commit` quando o diff staged adiciona um bloco de comentário em prosa acima de 3 linhas — backstop de qualidade de comentários (estilo ponytail). Roda antes do Bash e cancela o commit (exit 2); pra pular deliberadamente, use `git commit --no-verify`.",
+      "script": "check-comment-length.py",
+      "clients": ["claude-code"]
+    }
+  ]
+}
