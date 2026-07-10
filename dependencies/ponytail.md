@@ -11,20 +11,20 @@ manual: |
 
 # Ponytail
 
-Dependência **externa** — não faz parte do `@noclaf/mcp`. O comando [[init-sdd]]
+Dependência **externa** — não faz parte do `@noclaf/mcp`. O comando [init-sdd](../commands/dev/init-sdd.md)
 depende dela em runtime pra gerar a árvore de specs (SDD) dentro de `docs/`.
 
 > **Não** é pacote npm nem vai pra `~/.claude`. É um **plugin de marketplace** do
 > Claude Code / Codex, instalado *dentro do cliente* (slash-commands + confiança de
 > hooks / UI). A CLI do noclaf **não consegue automatizar** isso — no fim do
 > `init`/`sync` ela apenas **imprime os passos abaixo** (o campo `manual:` do
-> frontmatter). Compare com o [[improve]], que tem instalador de linha única e é
+> frontmatter). Compare com o [improve](improve.md), que tem instalador de linha única e é
 > oferecido pra rodar com `[y/N]`.
 
 ## Por que é necessária
 
 `/init-sdd` chama o motor de scaffolding do Ponytail pra criar os templates de
-spec, as `.base` (views do Obsidian) e o `AGENTS.md` inicial de forma idempotente.
+spec e o `AGENTS.md` inicial de forma idempotente.
 Sem ela, o comando não consegue escrever a estrutura.
 
 ## Instalação
@@ -58,4 +58,4 @@ mesmo install cobre o Codex desktop — reinicie o app depois de instalar.
 
 ## Usada por
 
-- [[init-sdd]] — scaffold da estrutura de specs.
+- [init-sdd](../commands/dev/init-sdd.md) — scaffold da estrutura de specs.

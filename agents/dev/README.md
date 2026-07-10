@@ -1,12 +1,6 @@
----
-title: dev
-type: moc
-description: Subagentes de engenharia — execução de código (escrever, revisar, refatorar).
----
-
 # Agents · dev
 
-Subagentes que executam trabalho de código — o atendimento ao cliente fica em [[agents/support/README|support]].
+Subagentes que executam trabalho de código — o atendimento ao cliente fica em [support](../support/README.md).
 
 ## Índice
 

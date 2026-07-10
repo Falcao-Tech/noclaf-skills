@@ -15,12 +15,12 @@ implementar.
 > **Não** vai pra `~/.claude`. Tem instalador de **linha única** (`skills:
 > shadcn/improve` no frontmatter), então no fim do `init`/`sync` a CLI **oferece
 > rodar** o comando abaixo com `[y/N]` (padrão: não) — sem shell, montado a partir
-> do campo validado. Contraste com o [[ponytail]], que é plugin de marketplace e só
+> do campo validado. Contraste com o [ponytail](ponytail.md), que é plugin de marketplace e só
 > pode ser instalado manualmente.
 
 ## Por que é necessária
 
-Os comandos do loop de SDD ([[init-sdd]] e afins) usam o `improve` pra checar a
+Os comandos do loop de SDD ([init-sdd](../commands/dev/init-sdd.md) e afins) usam o `improve` pra checar a
 consistência do spec (campos do frontmatter, seção *Out of scope*, critérios de
 aceite) e sugerir melhorias.
 
@@ -32,4 +32,4 @@ npx skills add shadcn/improve
 
 ## Usada por
 
-- [[init-sdd]] — scaffold + validação inicial da estrutura de specs.
+- [init-sdd](../commands/dev/init-sdd.md) — scaffold + validação inicial da estrutura de specs.

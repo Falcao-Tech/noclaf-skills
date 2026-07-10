@@ -1,47 +1,56 @@
----
-title: noclaf bundle
-type: moc
-description: Mapa de conteúdo do bundle noclaf — skills, commands, agents e dependencies que o worker recebe ao instalar o MCP.
----
+# Índice do repositório
 
-# noclaf bundle — Mapa de Conteúdo
-
-Ponto de entrada da vault. Tudo aqui (menos `dependencies/`) é distribuído pra
+Ponto de entrada do repo. Tudo aqui (menos `dependencies/`) é distribuído pra
 `~/.claude` via `noclaf sync` — veja o [README](README.md).
 
 ## Commands
 
-Slash-commands, por seção — índice: [[commands/README|commands]].
+Slash-commands, por seção — índice: [commands](commands/README.md).
 
-- **[[commands/dev/README|dev]]** — o loop de spec-driven dev: `init-sdd` → `new-spec` → `implement` → `ship`.
-- **[[commands/productivity/README|productivity]]** — fluxo de trabalho fora do código (vazio).
+- **[dev](commands/dev/README.md)** — o loop de spec-driven dev: `init-sdd` → `new-spec` → `implement` → `ship`.
+- **[productivity](commands/productivity/README.md)** — fluxo de trabalho fora do código (vazio).
 
 ## Skills
 
-Model-invoked. Organizadas por domínio — índice: [[skills/README|skills]].
+Model-invoked. Organizadas por domínio — índice: [skills](skills/README.md).
 
-- **[[skills/dev/README|dev]]** — engenharia, por stack (`general`, `front-end`, `back-end`, `mobile`).
-- **[[skills/productivity/README|productivity]]** — fluxo de trabalho fora do código (vazio).
+- **[dev](skills/dev/README.md)** — engenharia, por stack (`general`, `front-end`, `back-end`, `mobile`).
+- **[productivity](skills/productivity/README.md)** — fluxo de trabalho fora do código (vazio).
 
 ## Agents
 
-Subagentes, por seção — índice: [[agents/README|agents]].
+Subagentes, por seção — índice: [agents](agents/README.md).
 
-- **[[agents/dev/README|dev]]** — execução de código (vazio).
-- **[[agents/support/README|support]]** — atendimento ao cliente (vazio).
+- **[dev](agents/dev/README.md)** — execução de código (vazio).
+- **[support](agents/support/README.md)** — atendimento ao cliente (vazio).
 
 ## Dependencies
 
-Libs externas que alguns commands precisam — **não** sincronizadas. Índice: [[dependencies/README|dependencies]].
+Libs externas que alguns commands precisam — **não** sincronizadas. Índice: [dependencies](dependencies/README.md).
 
-- [[ponytail]] — engine de scaffolding usada por [[init-sdd]].
-- [[improve]] — validação de spec usada por [[init-sdd]].
+- [ponytail](dependencies/ponytail.md) — engine de scaffolding usada por [init-sdd](commands/dev/init-sdd.md).
+- [improve](dependencies/improve.md) — validação de spec usada por [init-sdd](commands/dev/init-sdd.md).
+
+## Hooks
+
+Scripts + gatilho que o cliente roda em eventos do ciclo de vida — provisionados e registrados no `settings.json` pelo CLI. Índice: [hooks](hooks/README.md).
+
+- **dev** — [check-comment-length](hooks/README.md): bloqueia `git commit` que adiciona bloco de comentário em prosa > 3 linhas.
+
+## Rules
+
+Convenções e knowledge de projeto que o agente segue como regra (não são model-invoked). Índice: [rules](rules/README.md).
+
+- [lovable-knowledge](rules/lovable-knowledge.md) — stack e convenções de front-end (ShadCN, TanStack, Tailwind, pt-BR).
 
 ## Como chega no worker
 
 ```
-bundle/  ──(noclaf sync / noclaf init)──►  ~/.claude/{commands,skills,agents}
+bundle/  ──(noclaf sync / noclaf init)──►  ~/.claude/{commands,skills,agents,hooks}
+         hooks/        também registram o gatilho no settings.json do cliente
          dependencies/ NÃO são copiadas — só listadas como libs a instalar
+         scripts/      tooling de build local — não sai daqui
 ```
 
 Instalar o MCP já roda o sync, então o worker recebe tudo isso automaticamente.
+Build local: `npm run ids` mantém os `id:` de telemetria estáveis.
