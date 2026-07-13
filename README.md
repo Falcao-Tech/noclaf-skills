@@ -1,7 +1,7 @@
 # @noclaf/skills
 
 O **repositório de conhecimento** do noclaf — skills, commands, agents e dependências
-consumidos pelo [`@noclaf/mcp`](https://github.com/Falcao-Tech/noclaf-mcp) e servidos
+consumidos pelo [`@noclaf/cli`](https://github.com/Falcao-Tech/noclaf-cli) e servidos
 aos clientes de IA (Claude Code, Codex, Claude Desktop/Cowork).
 
 ## Estrutura
@@ -16,7 +16,7 @@ aos clientes de IA (Claude Code, Codex, Claude Desktop/Cowork).
 
 ## Como é consumido
 
-Publicado no npm como `@noclaf/skills`. O `@noclaf/mcp` resolve este pacote em runtime
+Publicado no npm como `@noclaf/skills`. O `@noclaf/cli` resolve este pacote em runtime
 (`node_modules/@noclaf/skills`) e lê os arquivos direto — sem Supabase, sem grafo, offline.
 Atualizar as skills = publicar uma nova versão daqui; os workers pegam via `npm`.
 

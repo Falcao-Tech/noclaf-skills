@@ -1,7 +1,7 @@
 {
   "name": "@noclaf/skills",
   "version": "0.1.0",
-  "description": "Vault de conhecimento do noclaf — skills, commands, agents e dependências consumidos pelo @noclaf/mcp.",
+  "description": "Vault de conhecimento do noclaf — skills, commands, agents e dependências consumidos pelo @noclaf/cli.",
   "type": "module",
   "scripts": {
     "ids": "node scripts/assign-ids.mjs"

@@ -8,7 +8,7 @@ install: npx skills add shadcn/improve
 
 # Improve
 
-Dependência **externa** — não faz parte do `@noclaf/mcp`. Fornece utilitários que os
+Dependência **externa** — não faz parte do `@noclaf/cli`. Fornece utilitários que os
 comandos de spec-driven development usam pra validar e refinar um spec antes de
 implementar.
 

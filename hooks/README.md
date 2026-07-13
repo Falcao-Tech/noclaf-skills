@@ -6,7 +6,7 @@ commands — que são arquivos que o cliente lê sozinho de uma pasta — um hoo
 estiver **registrado no settings do cliente**. Copiar o script não basta.
 
 Por isso cada pasta de role tem um manifesto `hooks.json` que **declara** o binding, e o
-CLI (`@noclaf/mcp`) lê esse manifesto no `init`/`sync`, copia o script pra
+CLI (`@noclaf/cli`) lê esse manifesto no `init`/`sync`, copia o script pra
 `~/.claude/hooks/noclaf/<role>/` e registra o gatilho no `~/.claude/settings.json`.
 
 ## Layout

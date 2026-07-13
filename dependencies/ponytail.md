@@ -11,7 +11,7 @@ manual: |
 
 # Ponytail
 
-Dependência **externa** — não faz parte do `@noclaf/mcp`. O comando [init-sdd](../commands/dev/init-sdd.md)
+Dependência **externa** — não faz parte do `@noclaf/cli`. O comando [init-sdd](../commands/dev/init-sdd.md)
 depende dela em runtime pra gerar a árvore de specs (SDD) dentro de `docs/`.
 
 > **Não** é pacote npm nem vai pra `~/.claude`. É um **plugin de marketplace** do
