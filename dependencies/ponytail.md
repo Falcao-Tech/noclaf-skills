@@ -2,6 +2,7 @@
 title: Ponytail
 description: Lib externa de scaffolding que a skill init-sdd usa pra materializar a estrutura de spec-driven development no repo.
 repo: https://github.com/DietrichGebert/ponytail
+detect: ~/.claude/plugins/**/ponytail, ~/.codex/plugins/**/ponytail
 manual: |
   Não é npm e requer `node` no PATH (os hooks de ciclo de vida precisam dele).
   Claude Code: `/plugin marketplace add DietrichGebert/ponytail` e depois `/plugin install ponytail@ponytail` (2 prompts separados).

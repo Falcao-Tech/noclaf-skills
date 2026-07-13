@@ -24,7 +24,7 @@ Se `$ARGUMENTS` deu uma branch base, use-a. Senão, peça ao usuário para escol
 
 ## 2. Gate de segurança — lint + build precisam estar verdes
 
-O usuário pode ter mexido no código durante o review. Re-rode o **lint** + **build/type-check** do repo (os mesmos scripts que o apply-\* usou — não invente comandos). Se vermelho → **PARE** e reporte; nunca dê push em código quebrado.
+O usuário pode ter mexido no código durante o review. Re-rode o **lint** + **build/type-check** do repo (os mesmos scripts que o `/implement` usou — não invente comandos). Se vermelho → **PARE** e reporte; nunca dê push em código quebrado.
 
 ## 2b. Passada de qualidade — passo OBRIGATÓRIO, achados consultivos
 
@@ -67,7 +67,7 @@ Mostre ao usuário e **espere aprovação explícita**:
 
 ## 7. Remova o worktree (só se o push deu certo)
 
-Se isto rodou dentro de um worktree de apply-\* — verifique com `git worktree list` (a entrada `<repo>.worktrees/<stem>`) — desmonte-o agora: os commits estão na branch (local + com push feito), então removê-lo não perde nada além do diretório de checkout.
+Se isto rodou dentro de um worktree do `/implement` — verifique com `git worktree list` (a entrada `<repo>.worktrees/<stem>`) — desmonte-o agora: os commits estão na branch (local + com push feito), então removê-lo não perde nada além do diretório de checkout.
 
 - **Só se o push do passo 6 deu certo.** Se o push falhou ou foi pulado (sem remote), **mantenha** o worktree — nunca remova trabalho sem push.
 - **Dê `cd` para fora primeiro** até a raiz do repo principal (você não pode remover o worktree em que está), depois `git worktree remove --force <path>` — o `--force` é obrigatório porque deps não versionadas / `.env` / cache de build vivem lá.

@@ -1,6 +1,6 @@
 ---
 id: 1
-description: Motor único de execução — implementa uma spec READY (docs/specs/), corrige um bug (docs/bugs/) ou entrega um conjunto de tickets, com o mesmo pipeline: detecção do tipo, gate de status + clarificação, worktree isolado, build conforme as convenções do repo, lint + build + testes verdes, promoção de ADR, e STAGE (nunca commit). Substitui /apply-spec e /apply-bug.
+description: Motor único de execução — implementa uma spec READY (docs/specs/), corrige um bug (docs/bugs/) ou entrega um conjunto de tickets, com o mesmo pipeline: detecção do tipo, gate de status + clarificação, worktree isolado, build conforme as convenções do repo, lint + build + testes verdes, promoção de ADR, e STAGE (nunca commit).
 argument-hint: <id/caminho/título de spec ou bug | descrição dos tickets>
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 model: sonnet
@@ -10,7 +10,7 @@ Implemente o trabalho: **$ARGUMENTS**
 
 Você é um engenheiro sênior transformando intenção em código funcionando. Este é o
 **único comando de execução** do loop — ele detecta o tipo de trabalho e roda o mesmo
-motor, com os passos específicos de cada tipo. Substitui o `apply-spec` e o `apply-bug`.
+motor, com os passos específicos de cada tipo.
 
 ## 0. Detecte o tipo de trabalho (roteamento)
 

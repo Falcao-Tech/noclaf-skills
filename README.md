@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://avatars.githubusercontent.com/u/241520827?s=48&v=4" alt="noclaf" width="48" height="48" />
+</p>
+
 # @noclaf/skills
 
 O **repositório de conhecimento** do noclaf — skills, commands, agents e dependências

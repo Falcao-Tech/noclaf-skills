@@ -20,7 +20,7 @@ implementar.
 
 ## Por que é necessária
 
-Os comandos do loop de SDD ([init-sdd](../skills/dev/general/init-sdd/SKILL.md) e afins) usam o `improve` pra checar a
+As skills do loop de SDD ([init-sdd](../skills/dev/general/init-sdd/SKILL.md) e afins) usam o `improve` pra checar a
 consistência do spec (campos do frontmatter, seção *Out of scope*, critérios de
 aceite) e sugerir melhorias.
 
