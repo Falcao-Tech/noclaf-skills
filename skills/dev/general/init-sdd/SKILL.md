@@ -2,6 +2,7 @@
 name: init-sdd
 description: Faz o scaffold da estrutura completa de spec-driven-dev — specs, bugs, ADRs e a constituição AGENTS.md — no repo atual (idempotente), copiando os templates ao lado desta skill; opcionalmente analisa o repo pra pré-preencher e então PARA. Use pra "iniciar o SDD", "montar docs/", "configurar spec-driven dev" num repo.
 disable-model-invocation: true
+model: sonnet
 ---
 
 # Init SDD
