@@ -3,6 +3,7 @@ id: 1
 description: Motor único de execução — implementa uma spec READY (docs/specs/), corrige um bug (docs/bugs/) ou entrega um conjunto de tickets, com o mesmo pipeline: detecção do tipo, gate de status + clarificação, worktree isolado, build conforme as convenções do repo, lint + build + testes verdes, promoção de ADR, e STAGE (nunca commit). Substitui /apply-spec e /apply-bug.
 argument-hint: <id/caminho/título de spec ou bug | descrição dos tickets>
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
+model: sonnet
 ---
 
 Implemente o trabalho: **$ARGUMENTS**
@@ -17,8 +18,8 @@ Case `$ARGUMENTS` e escolha **um** modo:
 
 - Varra `docs/specs/**/*.md` (frontmatter `id`/`title`/`status`) → match ⇒ **SPEC**.
 - Varra `docs/bugs/**/*.md` (nome do arquivo / `title`) → match ⇒ **BUG**.
-- Descrição livre de trabalho / lista de tickets sem doc correspondente ⇒ **TICKETS**
-  (a descrição do usuário é o contrato).
+- `docs/tickets/*.md`, um número/URL de issue do GitHub, tasks do NOS, ou descrição livre de
+  tickets ⇒ **TICKETS** (a fonte de tickets é o contrato; ver passo 3).
 
 Vários matches (ou spec **e** bug batem) → mostre os candidatos e pergunte. Nenhum match
 e não parece tickets → diga claramente; não invente caminho. `$ARGUMENTS` vazio → liste
@@ -78,7 +79,11 @@ mas nunca adivinhe o que o usuário quis dizer.
   log de erro colado → a skill `debug-log` é o caminho mais rápido. Faça a **mudança
   mínima** que resolve a raiz (não workaround) e adicione/ajuste um **teste de regressão**
   se o projeto tiver testes.
-- **TICKETS** — cada ticket em ordem, rastreando progresso como na spec.
+- **TICKETS** — resolva a fonte (`docs/tickets/<...>.md`, sub-issues de uma issue do GitHub
+  via `gh`, ou tasks do NOS) e trabalhe o **frontier**: só tickets cujos bloqueadores estão
+  **todos done**, **um por vez**, respeitando o DAG. Ao terminar um, marque-o (checkbox no
+  arquivo / `gh issue close` / `nos_move_task`) e **limpe o contexto antes do próximo**.
+  Nunca pegue um ticket com bloqueador pendente.
 - **Todos:** respeite as convenções do repo (`CLAUDE.md`/`AGENTS.md` — idioma dos
   identificadores, migrations, onde vai schema/util, estilo de comentário). Construa
   exatamente o pedido, **sem gold-plating**. **Comente com parcimônia** — só o *porquê* não

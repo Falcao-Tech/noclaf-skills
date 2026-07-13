@@ -1,6 +1,6 @@
 ---
 title: Ponytail
-description: Lib externa de scaffolding que o comando /init-sdd usa pra materializar a estrutura de spec-driven development no repo.
+description: Lib externa de scaffolding que a skill init-sdd usa pra materializar a estrutura de spec-driven development no repo.
 repo: https://github.com/DietrichGebert/ponytail
 manual: |
   Não é npm e requer `node` no PATH (os hooks de ciclo de vida precisam dele).
@@ -11,7 +11,7 @@ manual: |
 
 # Ponytail
 
-Dependência **externa** — não faz parte do `@noclaf/cli`. O comando [init-sdd](../commands/dev/init-sdd.md)
+Dependência **externa** — não faz parte do `@noclaf/cli`. A skill [init-sdd](../skills/dev/general/init-sdd/SKILL.md)
 depende dela em runtime pra gerar a árvore de specs (SDD) dentro de `docs/`.
 
 > **Não** é pacote npm nem vai pra `~/.claude`. É um **plugin de marketplace** do
@@ -23,7 +23,7 @@ depende dela em runtime pra gerar a árvore de specs (SDD) dentro de `docs/`.
 
 ## Por que é necessária
 
-`/init-sdd` chama o motor de scaffolding do Ponytail pra criar os templates de
+O `init-sdd` chama o motor de scaffolding do Ponytail pra criar os templates de
 spec e o `AGENTS.md` inicial de forma idempotente.
 Sem ela, o comando não consegue escrever a estrutura.
 
@@ -58,4 +58,4 @@ mesmo install cobre o Codex desktop — reinicie o app depois de instalar.
 
 ## Usada por
 
-- [init-sdd](../commands/dev/init-sdd.md) — scaffold da estrutura de specs.
+- [init-sdd](../skills/dev/general/init-sdd/SKILL.md) — scaffold da estrutura de specs.

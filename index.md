@@ -7,7 +7,7 @@ Ponto de entrada do repo. Tudo aqui (menos `dependencies/`) é distribuído pra
 
 Slash-commands, por seção — índice: [commands](commands/README.md).
 
-- **[dev](commands/dev/README.md)** — o loop de spec-driven dev: `init-sdd` → `new-spec` → `implement` → `ship`.
+- **[dev](commands/dev/README.md)** — o loop de spec-driven dev: `init-sdd` → `to-doc` (spec) → (`to-tickets`) → `implement` → `ship`.
 - **[productivity](commands/productivity/README.md)** — fluxo de trabalho fora do código (vazio).
 
 ## Skills
@@ -28,8 +28,9 @@ Subagentes, por seção — índice: [agents](agents/README.md).
 
 Libs externas que alguns commands precisam — **não** sincronizadas. Índice: [dependencies](dependencies/README.md).
 
-- [ponytail](dependencies/ponytail.md) — engine de scaffolding usada por [init-sdd](commands/dev/init-sdd.md).
-- [improve](dependencies/improve.md) — validação de spec usada por [init-sdd](commands/dev/init-sdd.md).
+- [ponytail](dependencies/ponytail.md) — engine de scaffolding usada por [init-sdd](skills/dev/general/init-sdd/SKILL.md).
+- [improve](dependencies/improve.md) — validação de spec usada por [init-sdd](skills/dev/general/init-sdd/SKILL.md).
+- [gh](dependencies/gh.md) — CLI do GitHub, usada por [to-doc](skills/dev/general/to-doc/SKILL.md) (spec) + [to-tickets](skills/dev/general/to-tickets/SKILL.md) pra publicar issues.
 
 ## Hooks
 

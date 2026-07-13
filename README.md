@@ -6,7 +6,7 @@ aos clientes de IA (Claude Code, Codex, Claude Desktop/Cowork).
 
 ## Estrutura
 
-- `commands/<seção>/*.md` — slash-commands (ex.: `/init-sdd`, `/implement`), por seção (`dev`, `productivity`). Índice em [commands](commands/README.md).
+- `commands/<seção>/*.md` — slash-commands (ex.: `/implement`, `/ship`), por seção (`dev`, `productivity`). Índice em [commands](commands/README.md).
 - `skills/<seção>/<nome>/SKILL.md` — skills no padrão Agent Skills, por seção (`dev`, `productivity`). Índice em [skills](skills/README.md).
 - `agents/<seção>/*.md` — subagentes, por seção (`dev`, `support`). Índice em [agents](agents/README.md).
 - `hooks/<role>/` — script + `hooks.json` que o CLI registra no `settings.json` do cliente. Índice em [hooks](hooks/README.md).

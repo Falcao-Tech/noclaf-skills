@@ -20,7 +20,7 @@ implementar.
 
 ## Por que é necessária
 
-Os comandos do loop de SDD ([init-sdd](../commands/dev/init-sdd.md) e afins) usam o `improve` pra checar a
+Os comandos do loop de SDD ([init-sdd](../skills/dev/general/init-sdd/SKILL.md) e afins) usam o `improve` pra checar a
 consistência do spec (campos do frontmatter, seção *Out of scope*, critérios de
 aceite) e sugerir melhorias.
 
@@ -32,4 +32,4 @@ npx skills add shadcn/improve
 
 ## Usada por
 
-- [init-sdd](../commands/dev/init-sdd.md) — scaffold + validação inicial da estrutura de specs.
+- [init-sdd](../skills/dev/general/init-sdd/SKILL.md) — scaffold + validação inicial da estrutura de specs.
