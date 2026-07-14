@@ -4,5 +4,5 @@ Subagentes que o worker recebe no `noclaf sync`. Cada um é um `<nome>.md` com f
 
 ## Seções
 
-- **[dev](dev/README.md)** — subagentes de execução: escrever, revisar e refatorar código. (vazio)
+- **[dev](dev/README.md)** — subagentes de execução e **exploração** de código (ex.: `repo-scout`).
 - **[support](support/README.md)** — subagentes de atendimento: fazem a ponte com o cliente — comunicação, dúvidas e suporte. (vazio)

@@ -20,9 +20,12 @@ aos clientes de IA (Claude Code, Codex, Claude Desktop/Cowork).
 
 ## Como é consumido
 
-Publicado no npm como `@noclaf/skills`. O `@noclaf/cli` resolve este pacote em runtime
-(`node_modules/@noclaf/skills`) e lê os arquivos direto — sem Supabase, sem grafo, offline.
-Atualizar as skills = publicar uma nova versão daqui; os workers pegam via `npm`.
+O `@noclaf/cli` baixa este repositório (do GitHub) pro cache local `~/.noclaf/skills` no
+`noclaf sync`/`init` e lê os arquivos direto de lá — sem Supabase, sem grafo, offline após o
+primeiro sync. Ordem de resolução do CLI: `NOCLAF_SKILLS_DIR` (checkout local) → pacote npm
+`@noclaf/skills` (dev legado) → cache `~/.noclaf/skills` (fluxo padrão).
+
+Atualizar as skills = **commitar/push aqui**; os workers pegam a versão nova no próximo `noclaf sync`.
 
 ## Manter
 
@@ -32,7 +35,10 @@ Cada command/skill/agent tem um `id:` estável no frontmatter — chave de telem
 npm run ids   # atribui ids sequenciais aos itens sem id (existentes nunca mudam)
 ```
 
-## Publicar
+## Distribuir
+
+O canal principal é o próprio Git: **push na branch default** e os workers pegam via
+`noclaf sync`. Publicar no npm é **opcional/legado** (só o fallback de resolução):
 
 ```bash
 npm publish --access public

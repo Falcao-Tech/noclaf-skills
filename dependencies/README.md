@@ -2,7 +2,7 @@
 
 Ferramentas **externas** ao `@noclaf/cli` que alguns commands precisam em runtime. **Não** vão pra `~/.claude` — o worker instala na máquina; a CLI só as lista no fim do `sync`.
 
-Um command/skill declara que precisa de uma lib **referenciando o arquivo** dela — isso alimenta o aviso de instalação da CLI.
+Cada arquivo em `dependencies/` **é** uma dependência declarada — a presença no diretório basta (sem wikilink nem grafo). A CLI lista todas no fim do `sync`/`init` e oferece instalar as que têm instalador estruturado (`npm`/`skills`/`git`); as `manual` só imprimem os passos. O "Usada por" abaixo é nota pra humano, não liga nada no código.
 
 ## Índice
 
