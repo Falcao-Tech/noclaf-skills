@@ -2,6 +2,7 @@
 id: 12
 name: drytify
 description: Encontra e remove duplicação de código genuína — cópias exatas, gêmeos estruturais, repetições semânticas/comportamentais e reuso perdido de utilitários já existentes — e então faz refactor com julgamento de dev senior, em vez de perseguir DRY como um fim em si mesmo. Use quando o usuário digitar /drytify, pedir para "dar um DRY", deduplicar, encontrar/remover código repetido, consolidar copy-paste ou extrair um helper. Por padrão atua nos arquivos alterados (uncommitted + diff da branch vs main); aceita um argumento de path para restringir o escopo, ou --all para varrer o repositório inteiro. Sempre propõe antes de aplicar.
+effort: high
 user-invocable: true
 allowed-tools:
   - Read

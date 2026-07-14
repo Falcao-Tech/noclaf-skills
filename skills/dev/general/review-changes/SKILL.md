@@ -2,6 +2,7 @@
 id: 15
 name: review-changes
 description: Review de qualidade/limpeza do diff que vai ser commitado — higiene de comentários (destaque), além de duplicação, abstração, formatação e qualidade geral. Análise read-only via subagente; propõe correções, é consultiva (nunca bloqueia). Use antes de commitar/shipar, quando pedirem pra "revisar/limpar minhas mudanças" ou "checar excesso de comentário", ou quando invocada pelo /ship. NÃO é caça-bug — isso é o /code-review.
+effort: medium
 allowed-tools: Bash, Read, Grep, Glob, Edit, Agent
 ---
 

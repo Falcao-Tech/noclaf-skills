@@ -2,6 +2,7 @@
 id: 11
 name: council
 description: "Conselho de decisão. Quando você vai bater o martelo numa decisão e o Claude só concorda com o lado que você empurra, rode o conselho. Triggers: \"/council\", \"chama o conselho\"."
+effort: high
 argument-hint: "[mensagem]"
 ---
 

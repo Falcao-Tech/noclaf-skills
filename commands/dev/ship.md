@@ -4,6 +4,7 @@ description: Commit → push → abre PR de uma branch de trabalho já revisada 
 argument-hint: [branch-base]
 allowed-tools: Bash, Read, Grep, Glob, Edit, Agent, Skill
 model: sonnet
+effort: low
 ---
 
 Faça o ship do trabalho revisado na branch atual: **commit → push → abrir PR**.

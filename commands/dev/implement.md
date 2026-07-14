@@ -4,6 +4,7 @@ description: Motor único de execução — implementa uma spec READY (docs/spec
 argument-hint: <id/caminho/título de spec ou bug | descrição dos tickets>
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent
 model: sonnet
+effort: high
 ---
 
 Implemente o trabalho: **$ARGUMENTS**

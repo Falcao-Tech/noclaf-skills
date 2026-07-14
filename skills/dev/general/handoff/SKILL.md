@@ -2,6 +2,7 @@
 id: 14
 name: handoff
 description: Compacta a conversa atual em um documento de handoff para outro agente dar continuidade.
+effort: low
 argument-hint: "Para que a próxima sessão vai ser usada?"
 ---
 

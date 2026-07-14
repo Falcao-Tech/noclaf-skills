@@ -4,6 +4,7 @@ name: repo-scout
 description: Explorador somente-leitura e barato (Haiku) que mapeia UM recorte do repositório e devolve um resumo estruturado curto — fatos e caminhos, nunca o conteúdo dos arquivos. Feito pra rodar em leque (vários em paralelo), cada um com um recorte diferente. Não escreve nada.
 tools: Read, Grep, Glob
 model: haiku
+effort: low
 ---
 
 # Repo Scout

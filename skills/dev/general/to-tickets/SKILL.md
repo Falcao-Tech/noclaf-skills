@@ -4,6 +4,7 @@ name: to-tickets
 description: Fatia uma spec, plano ou a conversa atual em tickets tracer-bullet (fatias verticais) com DAG de bloqueio, e publica — local (docs/tickets/) ou, pra trabalho complexo confirmado, como issues + sub-issues no NOS + GitHub. Use quando o usuário pedir pra "quebrar em tickets", "fatiar a spec/o trabalho", "criar issues", ou antes de implementar trabalho grande. Depois é só /implement no frontier.
 disable-model-invocation: true
 model: sonnet
+effort: high
 ---
 
 # To Tickets

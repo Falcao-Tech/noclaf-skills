@@ -4,6 +4,7 @@ description: Documenta um repositório existente engenharia-reversa — descobre
 argument-hint: [caminho/área a documentar | vazio = repo inteiro]
 allowed-tools: Agent, Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
+effort: medium
 ---
 
 Documente o repositório (ou o recorte **$ARGUMENTS**). Você **sintetiza** — a descoberta

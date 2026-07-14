@@ -4,6 +4,7 @@ name: to-doc
 description: Cria um doc do loop de spec-driven dev — spec/PRD (docs/specs/), nota de bug (docs/bugs/) ou ADR (docs/decisions/) — scaffoldando do template e PARANDO (sem codar). Roteia por tipo e carrega só o padrão do tipo pedido. Use quando o usuário pedir pra "criar uma spec/PRD", "registrar um bug", "escrever um ADR" ou iniciar o loop.
 disable-model-invocation: true
 model: sonnet
+effort: medium
 ---
 
 # To Doc
