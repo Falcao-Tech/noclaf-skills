@@ -1,4 +1,5 @@
 ---
+id: 24
 name: document-creator
 description: Gera documentos PDF profissionais no padrão "Noclaf → Cliente" (comunicados e relatórios) a partir do TEMPLATE.html embutido — personaliza só a marca do cliente, traduz o conteúdo técnico para linguagem leiga e entrega o PDF via weasyprint. Use quando o usuário pedir para "gerar um comunicado/relatório para o cliente", "criar um documento Noclaf", "montar o PDF para <cliente>" ou anexar material de origem para virar documento.
 model: sonnet

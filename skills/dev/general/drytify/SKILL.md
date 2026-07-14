@@ -72,9 +72,12 @@ exclusões abaixo).
 - saída minificada/bundled, código vendored
 - o CLAUDE.md do projeto e quaisquer outros docs, a menos que o usuário peça
 
-Se a lista de arquivos passar de ~30 arquivos, despache a detecção para subagents
-`Explore` em paralelo (um por passada, ou dividido por diretório). Mantenha seu
-próprio contexto limpo para as fases de julgamento e proposta.
+**A detecção é read-only e paralelizável — delegue por padrão.** Se há mais que um
+punhado de arquivos (≳8) ou várias passadas, despache a detecção a agentes
+**`repo-scout`** (Haiku, read-only) em paralelo — um por passada ou por diretório —,
+cada um retornando achados estruturados (`arquivo:linha · tipo · o que se repete`).
+Só faça inline pra escopo pequeno. Mantenha seu contexto limpo pras fases de
+**julgamento** (passo 3) e **proposta** (passo 4) — essas são suas, não do scout.
 
 ---
 
@@ -282,9 +285,22 @@ Para cada item aprovado, em ordem:
    exportados se outros módulos os importam — se você precisar renomear, atualize
    todo importador.
 
-3. **Rode os checks do projeto se existirem.** Olhe os scripts do `package.json`
-   (ou `pyproject.toml`, `Cargo.toml`, etc.) e rode o que está de fato definido —
-   typecheck, lint, test. Não invente comandos. Se nada estiver definido, pule.
+3. **Rode os checks do projeto** — mesmo bloco do `/implement §4` (descobre e roda os
+   scripts reais; não invente):
+   ```bash
+   set -uo pipefail
+   fail=0; step(){ echo "▶ $*"; "$@" || fail=1; }
+   if [ -f package.json ]; then
+     pm=npm; [ -f yarn.lock ] && pm=yarn; [ -f pnpm-lock.yaml ] && pm=pnpm
+     for k in $(node -e "const x=require('./package.json').scripts||{};for(const k of Object.keys(x))if(/^(lint|type-?check|build|test)$/.test(k))console.log(k)"); do step $pm run "$k"; done
+   elif [ -f pyproject.toml ] || [ -f setup.cfg ]; then
+     command -v ruff >/dev/null && step ruff check .; command -v mypy >/dev/null && step mypy .; step pytest -q
+   elif [ -f Cargo.toml ]; then
+     step cargo clippy -q; step cargo build -q; step cargo test -q
+   fi
+   [ "$fail" = 0 ] && echo "✅ verde" || echo "❌ vermelho — pare e reporte"
+   ```
+   Nada definido → pule.
 
 4. **Reporte**, por item: arquivos alterados, call sites reescritos, checks
    rodados + resultado, qualquer coisa que o usuário deva conferir manualmente

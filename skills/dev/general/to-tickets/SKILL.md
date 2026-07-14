@@ -1,4 +1,5 @@
 ---
+id: 23
 name: to-tickets
 description: Fatia uma spec, plano ou a conversa atual em tickets tracer-bullet (fatias verticais) com DAG de bloqueio, e publica — local (docs/tickets/) ou, pra trabalho complexo confirmado, como issues + sub-issues no NOS + GitHub. Use quando o usuário pedir pra "quebrar em tickets", "fatiar a spec/o trabalho", "criar issues", ou antes de implementar trabalho grande. Depois é só /implement no frontier.
 disable-model-invocation: true
@@ -22,11 +23,14 @@ corpo inteiro:
 - **issue** (número/URL) → `gh issue view <n> --comments` (leia corpo + comentários);
 - **descrição livre** → é o contrato.
 
-## 2. Explore o codebase (opcional)
+## 2. Entenda o estado atual (delegue — não explore inline)
 
-Se ainda não explorou, explore para entender o estado atual. Títulos e descrições dos
-tickets usam o **glossário de domínio** do projeto e respeitam os **ADRs** da área. Procure
-oportunidades de **prefactor**: *"deixe a mudança fácil, depois faça a mudança fácil."*
+Se precisar entender o codebase pra fatiar bem, **não explore você mesmo**: lance 1–3 agentes
+**`repo-scout`** (read-only, Haiku, em paralelo) com recortes objetivos ("como funciona a área
+X hoje", "onde vive Y", "quais ADRs tocam Z"). Eles voltam com fatos + paths; você fica com o
+contexto limpo pra fatiar. Títulos e descrições usam o **glossário de domínio** do projeto e
+respeitam os **ADRs** da área. Procure **prefactor**: *"deixe a mudança fácil, depois faça a
+mudança fácil."* Contexto já suficiente na conversa → pule este passo.
 
 ## 3. Rascunhe as fatias verticais
 

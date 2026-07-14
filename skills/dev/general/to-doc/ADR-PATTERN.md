@@ -14,9 +14,11 @@ não aqui. Use este fluxo pra decisões que você registra **deliberadamente** (
 planejamento, ou fora de banda). Decisões que surgem *enquanto* `/implement` roda são escritas
 **automaticamente** por ele — pra essas você não precisa disto.
 
-1. **id do ADR.** Varra `docs/decisions/**/*.md` (prefixo do arquivo + frontmatter `id:`).
-   Próximo = maior + 1, zeros à esquerda até 4 dígitos (`0001` se nenhum existir). É uma
-   **sequência separada** dos ids de spec — nunca compartilhe o contador global de specs.
+1. **id do ADR.** Determinístico — rode (não leia arquivo por arquivo):
+   ```bash
+   n=$(grep -rhoE '^id:[[:space:]]*"?[0-9]+' docs/decisions 2>/dev/null | grep -oE '[0-9]+' | sort -n | tail -1); printf "%04d\n" $(( ${n:-0} + 1 ))
+   ```
+   É uma **sequência separada** dos ids de spec — nunca compartilhe o contador global de specs.
 2. **Caminho:** `docs/decisions/<id>-<kebab-case-title>.md` — o id prefixa o arquivo (convenção
    de ADR) e vive no frontmatter. Título em inglês.
 3. **Scaffold a partir de `docs/_templates/adr.md`.** Se faltar, use as seções: Contexto |

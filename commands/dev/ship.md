@@ -1,6 +1,6 @@
 ---
 id: 6
-description: Commit → push → abre PR para um worktree de /implement já revisado. Divide docs vs código em Conventional Commits (título em inglês ≤80 chars, corpo em português ≤120 chars), confirma o plano e então dispara.
+description: Commit → push → abre PR de uma branch de trabalho já revisada — normalmente após /implement, mas funciona em qualquer branch de feature (inclusive feita à mão), sem depender dele. Divide docs vs código em Conventional Commits (título em inglês ≤80 chars, corpo em português ≤120 chars), confirma o plano e então dispara.
 argument-hint: [branch-base]
 allowed-tools: Bash, Read, Grep, Glob, Edit, Agent, Skill
 model: sonnet
@@ -8,15 +8,30 @@ model: sonnet
 
 Faça o ship do trabalho revisado na branch atual: **commit → push → abrir PR**.
 
-Rode isto **depois** do `/implement`, uma vez que **você já revisou o diff** e está satisfeito com ele — o `/implement` faz stage mas deliberadamente nunca commita; este é o comando que termina o serviço. Todo o trabalho acontece dentro do worktree que o `/implement` criou.
+Rode isto quando **já revisou o diff** e está satisfeito. Normalmente vem após o `/implement`
+(que faz stage mas deliberadamente nunca commita), mas **funciona em qualquer branch de
+trabalho revisada — inclusive uma feita à mão, sem `/implement`**. Se rodou de um worktree do
+`/implement`, o passo 7 o remove; branch simples, ele é pulado.
 
 ## 0. Detecte o que você vai shipar
 
-Leia a branch atual e derive o tipo de trabalho:
+A **única** recusa é shipar direto de uma branch-base — nunca commite/abra PR a partir de
+`main`/`master`/`dev` ou da default do remote. Rode:
 
-- `feature/<id>-<slug>` → **spec**. O tipo do commit de código é `feat:` por padrão; leia a spec em `docs/specs/<area>/<slug>.md` para o corpo do PR.
-- `fix/<slug>` → **bug**. O tipo do commit de código é `fix:` por padrão.
-- Qualquer outra coisa (`main`/`master`, ou uma branch sem linhagem de `/implement`) → **PARE**: diga ao usuário para rodar `/implement` primeiro. Nunca faça ship de uma branch não relacionada.
+```bash
+cur=$(git rev-parse --abbrev-ref HEAD)
+def=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@'); def=${def:-main}
+case "$cur" in main|master|dev|"$def") echo "PARE: '$cur' é branch-base — crie uma branch de trabalho antes."; exit 1;; esac
+echo "branch de trabalho: $cur"
+```
+
+Passou → derive o tipo (pra escolher o tipo do commit de código + montar o corpo do PR):
+
+- `feature/<id>-<slug>` → **spec**: `feat:` por padrão; leia a spec em `docs/specs/<area>/<slug>.md` pro corpo.
+- `fix/<slug>` → **bug**: `fix:` por padrão.
+- **Qualquer outra branch de trabalho** (feita à mão, sem passar pelo `/implement`) → **prossiga**:
+  infira o tipo pela natureza do diff (`feat`/`fix`/`refactor`/…) — ou pergunte se ambíguo — e,
+  sem spec vinculada, monte o corpo do PR a partir do diff + dos commits da branch. **Não exija `/implement`.**
 
 ## 1. Escolha a base do PR — pergunte PRIMEIRO, antes de qualquer commit
 
@@ -24,7 +39,22 @@ Se `$ARGUMENTS` deu uma branch base, use-a. Senão, peça ao usuário para escol
 
 ## 2. Gate de segurança — lint + build precisam estar verdes
 
-O usuário pode ter mexido no código durante o review. Re-rode o **lint** + **build/type-check** do repo (os mesmos scripts que o `/implement` usou — não invente comandos). Se vermelho → **PARE** e reporte; nunca dê push em código quebrado.
+O usuário pode ter mexido no código durante o review. Re-rode **lint + build/type-check + testes** — **este é o mesmo bloco do `/implement §4`** (mantenha idêntico). Se vermelho → **PARE** e reporte; nunca dê push em código quebrado.
+
+```bash
+set -uo pipefail
+fail=0; step(){ echo "▶ $*"; "$@" || fail=1; }
+if [ -f package.json ]; then
+  pm=npm; [ -f yarn.lock ] && pm=yarn; [ -f pnpm-lock.yaml ] && pm=pnpm
+  echo "scripts:"; node -e "for(const s of Object.keys(require('./package.json').scripts||{}))console.log(' - '+s)"
+  for k in $(node -e "const x=require('./package.json').scripts||{};for(const k of Object.keys(x))if(/^(lint|type-?check|build|test)$/.test(k))console.log(k)"); do step $pm run "$k"; done
+elif [ -f pyproject.toml ] || [ -f setup.cfg ]; then
+  command -v ruff >/dev/null && step ruff check .; command -v mypy >/dev/null && step mypy .; step pytest -q
+elif [ -f Cargo.toml ]; then
+  step cargo clippy -q; step cargo build -q; step cargo test -q
+fi
+[ "$fail" = 0 ] && echo "✅ verde" || { echo "❌ vermelho"; exit 1; }
+```
 
 ## 2b. Passada de qualidade — passo OBRIGATÓRIO, achados consultivos
 
@@ -67,12 +97,25 @@ Mostre ao usuário e **espere aprovação explícita**:
 
 ## 7. Remova o worktree (só se o push deu certo)
 
-Se isto rodou dentro de um worktree do `/implement` — verifique com `git worktree list` (a entrada `<repo>.worktrees/<stem>`) — desmonte-o agora: os commits estão na branch (local + com push feito), então removê-lo não perde nada além do diretório de checkout.
+**Só se o push do passo 6 deu certo.** Se o push falhou ou foi pulado (sem remote),
+**mantenha** o worktree — nunca remova trabalho sem push. Se removeu, rode **este bloco de
+uma vez** (determinístico — não precisa `git worktree list` pra "descobrir" o path):
 
-- **Só se o push do passo 6 deu certo.** Se o push falhou ou foi pulado (sem remote), **mantenha** o worktree — nunca remova trabalho sem push.
-- **Dê `cd` para fora primeiro** até a raiz do repo principal (você não pode remover o worktree em que está), depois `git worktree remove --force <path>` — o `--force` é obrigatório porque deps não versionadas / `.env` / cache de build vivem lá.
-- **Mantenha a branch** (o PR aponta para ela); só o diretório do worktree vai embora. Faça re-checkout da branch depois se precisar de trabalho de follow-up.
-- Não rodou de um worktree (branch simples)? Pule este passo.
+```bash
+set -euo pipefail
+here=$(git rev-parse --show-toplevel)                       # o worktree atual
+main=$(git worktree list --porcelain | sed -n '1s/^worktree //p')
+if [ "$here" != "$main" ]; then
+  cd "$main"                                                 # não dá pra remover o worktree em que se está
+  git worktree remove --force "$here"                        # --force: deps/.env/cache não versionados vivem lá
+  echo "worktree removido: $here (branch mantida)"
+else
+  echo "sem worktree (branch simples) — nada a remover"
+fi
+```
+
+A **branch é mantida** (o PR aponta pra ela); só o diretório sai. Re-checkout depois se
+precisar de follow-up.
 
 ## 8. Handoff
 

@@ -12,10 +12,26 @@ Revise as **mudanças prestes a serem commitadas** buscando qualidade e limpeza 
 - Um argumento de path estreita o escopo pra aquele path.
 
 ## Procedimento
-1. **Delegue a leitura a um subagente read-only.** Spawne um agente `Explore` (ou read-only) sobre o diff + o código imediatamente ao redor, com os critérios abaixo. Ele **não pode editar** — só retorna achados. Isso mantém a análise fora do contexto do chamador e não-destrutiva. Peça que retorne cada achado como: `severidade` · `arquivo:linha` · `o quê` · `porquê` · `correção sugerida`.
-2. **Apresente** os achados agrupados por severidade, **excesso de comentário primeiro**, depois duplicação / abstração / formatação / qualidade. Seja enxuto — sem encher linguiça; se o diff está limpo, diga isso em uma linha.
-3. **Aplique só o que for aprovado.** Comentários + limpezas triviais → ofereça aplicar em lote. Qualquer coisa substantiva (mudança de abstração real / refactor) → descreva e deixe o usuário decidir. **Consultivo — nunca bloqueia.**
-4. Se as correções aplicadas mexeram em código, avise que lint/build devem ser rodados de novo.
+
+**1. Capture o diff (determinístico — não peça pra um agente "achar" as mudanças).** Rode:
+
+```bash
+base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@'); base=${base:-main}
+git diff --merge-base "$base" -- . ':(exclude)*.lock' ':(exclude)*.min.*'   # branch vs base
+git diff HEAD -- .                                                          # staged + unstaged (tracked)
+git diff --stat HEAD | tail -1                                             # tamanho
+```
+(um path em `$ARGUMENTS` estreita: troque `-- .` por `-- <path>`.) Você já tem o diff exato + a lista de arquivos — não redescubra.
+
+**2. Escolha o modo pelo tamanho:**
+- **Diff pequeno** (poucos arquivos / até ~400 linhas) → **revise inline, sem subagente.** Spawnar um agente pra 30 linhas é só latência; você já tem o diff acima.
+- **Diff grande** → **delegue em leque a agentes read-only baratos (`repo-scout`/Haiku), um por arquivo ou bloco**, cada um com os critérios abaixo, retornando achados estruturados. É só aqui que o custo do subagente se paga — e **passe o recorte pronto**, nunca deixe o agente redescobrir o diff.
+
+Trabalhe sobre as **linhas adicionadas/alteradas** (higiene de comentário e idioma vivem nas linhas `+`); leia contexto ao redor só pra duplicação/abstração.
+
+**3. Retorne cada achado como** `severidade · arquivo:linha · o quê · porquê · correção` e apresente agrupado, **excesso de comentário primeiro**, depois duplicação / abstração / formatação / qualidade. Diff limpo → diga em uma linha.
+
+**4. Aplique só o aprovado.** Comentários + limpezas triviais → ofereça em lote; substantivo (refactor real) → descreva e deixe o usuário decidir. **Consultivo — nunca bloqueia.** Se mexeu em código, avise pra re-rodar lint/build.
 
 ## Critérios (ordem de prioridade)
 

@@ -16,9 +16,11 @@ qualquer caso: **lacuna genuína NÃO se inventa** — vira **Questão em aberto
 1. **Área (subpasta de domínio).** Área explícita do usuário → use-a. Senão, infira das
    subpastas existentes em `docs/specs/` + a descrição; genuinamente incerto → PERGUNTE.
    Nomes de área em inglês, kebab-case (conforme o `AGENTS.md`).
-2. **id global.** Varra `docs/specs/**/*.md` e leia o `id:` de cada um. Próximo = maior + 1,
-   zeros à esquerda até 4 dígitos (`0001` se nenhum existir). O id é **global** — único entre
-   todas as áreas, não por pasta.
+2. **id global.** Determinístico — rode (não leia arquivo por arquivo):
+   ```bash
+   n=$(grep -rhoE '^id:[[:space:]]*"?[0-9]+' docs/specs 2>/dev/null | grep -oE '[0-9]+' | sort -n | tail -1); printf "%04d\n" $(( ${n:-0} + 1 ))
+   ```
+   O id é **global** — único entre todas as áreas, não por pasta.
 3. **Caminho:** `docs/specs/<area>/<id>-<kebab-case-feature>.md` — o id prefixa o arquivo (pra
    ordenar e ser handle estável se o slug mudar) e também vive no frontmatter. Título/slug em inglês.
 4. **Scaffold a partir de `docs/_templates/spec.md` e preencha o que já sabe.** Se faltar, use

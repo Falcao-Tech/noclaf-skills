@@ -48,25 +48,45 @@ mas nunca adivinhe o que o usuário quis dizer.
 
 ## 2. Isole o trabalho num git worktree próprio
 
-- **Branch:** SPEC → `feature/<stem>` (stem = nome do arquivo da spec sem `.md`, já é
-  `<id>-<slug>`; não re-prefixe o id). BUG → `fix/<slug>`. TICKETS → `feature/<slug>`
-  (slug curto a partir da descrição).
-- **Retomada:** se a branch (ou um worktree já em checkout nela) existir, **reutilize**.
-  Senão, crie **do zero a partir da branch default** (`main`/`master`), não importa em
-  qual branch você esteja. NUNCA reutilize uma branch não relacionada em que você por
-  acaso está — é assim que o trabalho acaba na branch errada.
-- **Worktree:** diretório irmão agrupado — `<pai-do-repo>/<nome-do-repo>.worktrees/<stem|slug>`.
-  `git worktree add <path> -b <branch> <default-branch>` (reutilize o path se já existir).
-  Anuncie branch + path e **faça todo o resto dentro do worktree.**
-- **Traga a nota pra dentro (SPEC/BUG):** a spec/nota costuma estar sem commit na origem;
-  copie `docs/specs|bugs/<file>.md` pro worktree e **delete a original da working tree de
-  origem** (se ainda estiver lá) — a cópia do worktree vira a canônica. Se já estava
-  commitada na origem, sinalize no handoff. (TICKETS: sem doc a mover.)
-- **Deixe buildável:** worktree novo não tem deps/`.env`/cache; rode o instalador do repo
-  (`npm|pnpm install`, `poetry install`, … — não invente) e copie a config local não
-  versionada que o build precisa (`.env*` etc.).
-- **SPEC:** vire `ready → in-progress` e crie um pequeno **arquivo de progresso** (a ideia,
-  um checklist espelhando as Tarefas, um recap corrido), conforme convenção do repo.
+Isto é **determinístico** — não explore com `ls`/`git branch`/`git worktree list`. Calcule
+`stem` e `branch` (operação de string, a partir do passo 0) e rode **o bloco abaixo de uma
+vez só**: ele acha a raiz e a default branch, cria-ou-reutiliza o worktree e instala deps.
+
+- `stem`: SPEC → nome do arquivo da spec sem `.md` (já é `<id>-<slug>`; **não** re-prefixe o
+  id). BUG → `<slug>`. TICKETS → `<slug>` curto da descrição.
+- `branch`: SPEC/TICKETS → `feature/<stem>`. BUG → `fix/<stem>`.
+
+```bash
+set -euo pipefail
+stem="__STEM__"; branch="__BRANCH__"                 # calculados acima; não use ls pra "achar" nada
+root=$(git rev-parse --show-toplevel); repo=$(basename "$root")
+def=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')
+def=${def:-$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p')}; def=${def:-main}
+wt="$(dirname "$root")/${repo}.worktrees/${stem}"
+if git show-ref --verify --quiet "refs/heads/${branch}"; then
+  git worktree add "$wt" "$branch" 2>/dev/null || true   # branch já existe → reutiliza (ou já em checkout)
+else
+  git worktree add "$wt" -b "$branch" "$def"             # nova → cria a partir da default
+fi
+cd "$wt"
+if   [ -f package-lock.json ]; then npm ci --silent
+elif [ -f pnpm-lock.yaml ];    then pnpm i --silent
+elif [ -f yarn.lock ];         then yarn --silent
+elif [ -f poetry.lock ];       then poetry install -q
+elif [ -f Cargo.toml ];        then cargo fetch -q
+fi
+echo "worktree=$wt  branch=$branch"
+```
+
+Regra: **nunca** reutilize uma branch não relacionada em que você por acaso está — o bloco
+sempre parte da default quando a branch não existe. Faça **todo o resto dentro de `$wt`**. Depois do bloco:
+
+- **Traga a nota pra dentro (SPEC/BUG):** copie `docs/specs|bugs/<file>.md` pro worktree e
+  **delete a original** da working tree de origem se ainda não estava commitada; se já
+  estava, sinalize no handoff. (TICKETS: sem doc a mover.)
+- Copie a config local não versionada que o build precisa (`.env*` etc.).
+- **SPEC:** vire `ready → in-progress` e crie um pequeno **arquivo de progresso** (checklist
+  espelhando as Tarefas), conforme convenção do repo.
 
 ## 3. Implemente
 
@@ -93,10 +113,27 @@ mas nunca adivinhe o que o usuário quis dizer.
 
 ## 4. Verifique — lint + build + testes verdes
 
-Rode os scripts de **lint** e **build/type-check** do repo (do `package.json` /
-`pyproject.toml` / `Cargo.toml`) e a **suíte de testes inteira uma vez no fim**. Não
-invente comandos. Precisam estar **verdes** antes da finalização — conserte o que você
-quebrou, ou pare e reporte.
+Rode **lint + build/type-check + testes** e deixe **verde** antes de finalizar. Não invente
+comandos — rode **este bloco de uma vez** (descobre os scripts do manifesto e roda os
+convencionais; imprime a lista pra você rodar os de nome fora do padrão):
+
+```bash
+set -uo pipefail
+fail=0; step(){ echo "▶ $*"; "$@" || fail=1; }
+if [ -f package.json ]; then
+  pm=npm; [ -f yarn.lock ] && pm=yarn; [ -f pnpm-lock.yaml ] && pm=pnpm
+  echo "scripts:"; node -e "for(const s of Object.keys(require('./package.json').scripts||{}))console.log(' - '+s)"
+  for k in $(node -e "const x=require('./package.json').scripts||{};for(const k of Object.keys(x))if(/^(lint|type-?check|build|test)$/.test(k))console.log(k)"); do step $pm run "$k"; done
+elif [ -f pyproject.toml ] || [ -f setup.cfg ]; then
+  command -v ruff >/dev/null && step ruff check .; command -v mypy >/dev/null && step mypy .; step pytest -q
+elif [ -f Cargo.toml ]; then
+  step cargo clippy -q; step cargo build -q; step cargo test -q
+fi
+[ "$fail" = 0 ] && echo "✅ verde" || { echo "❌ vermelho — conserte antes de finalizar"; exit 1; }
+```
+
+Se nenhum script padrão casou mas a lista impressa tem equivalentes (`check`, `ci`, `test:unit`…),
+rode-os — **não invente**. Conserte o que você quebrou; vermelho bloqueia a finalização.
 
 - **SPEC** — **rastreabilidade:** cada **Critério de aceitação** mapeia pra uma **Tarefa**
   marcada (refs `(T…)`); sinalize Tarefa sem critério e critério sem Tarefa. Marque só os
