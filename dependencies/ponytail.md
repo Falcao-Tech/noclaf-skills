@@ -3,9 +3,9 @@ title: Ponytail
 description: Lib externa de scaffolding que a skill init-sdd usa pra materializar a estrutura de spec-driven development no repo.
 repo: https://github.com/DietrichGebert/ponytail
 detect: ~/.claude/plugins/**/ponytail, ~/.codex/plugins/**/ponytail
+claude-plugin: DietrichGebert/ponytail ponytail@ponytail
 manual: |
-  Não é npm e requer `node` no PATH (os hooks de ciclo de vida precisam dele).
-  Claude Code: `/plugin marketplace add DietrichGebert/ponytail` e depois `/plugin install ponytail@ponytail` (2 prompts separados).
+  Requer `node` no PATH (os 2 hooks de ciclo de vida precisam dele). Depois de instalar, abra `/hooks` e confie nos hooks.
   Codex: `codex plugin marketplace add DietrichGebert/ponytail`, então `/plugins` (instalar) e `/hooks` (confiar nos 2 hooks).
   Desktop (Claude/Codex): instale pela UI e reinicie o app.
 ---

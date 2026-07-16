@@ -89,6 +89,34 @@ sempre parte da default quando a branch não existe. Faça **todo o resto dentro
 - **SPEC:** vire `ready → in-progress` e crie um pequeno **arquivo de progresso** (checklist
   espelhando as Tarefas), conforme convenção do repo.
 
+## 2b. Registre o worktree no IDE
+
+Depois que o worktree existe, surface-o no editor do usuário automaticamente — em vez de ele
+fazer isso na mão. Leia o campo `ide` do `noclaf.json` da raiz de origem (`root`) e aja
+conforme o valor. **Qualquer outro valor (ou ausente) → pule este passo em silêncio.** Este
+passo é best-effort: **nunca falhe o implement** por causa dele; no máximo, mencione no
+handoff que o worktree está em `$wt` pra abrir manualmente.
+
+- **`vscode`** — adiciona o worktree ao workspace da janela ativa (aparece no **Source
+  Control**, multi-root):
+
+  ```bash
+  command -v code >/dev/null 2>&1 && code --add "$wt" || true
+  ```
+
+- **`xcode`** — o Xcode não tem multi-root; então **abre** o projeto/workspace do worktree
+  numa janela própria via `xed` (prefere `.xcworkspace`, cai pro `.xcodeproj`):
+
+  ```bash
+  if command -v xed >/dev/null 2>&1; then
+    ws=$(find "$wt" -maxdepth 2 -name '*.xcworkspace' -print -quit)
+    [ -z "$ws" ] && ws=$(find "$wt" -maxdepth 2 -name '*.xcodeproj' -print -quit)
+    [ -n "$ws" ] && xed "$ws" || true
+  fi
+  ```
+
+- O binário do editor (`code`/`xed`) ausente do PATH → **não falhe**; siga normalmente.
+
 ## 3. Implemente
 
 - **SPEC** — as **Tarefas em ordem**; após cada uma marque a caixa na spec + atualize o
