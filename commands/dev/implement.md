@@ -76,7 +76,19 @@ elif [ -f yarn.lock ];         then yarn --silent
 elif [ -f poetry.lock ];       then poetry install -q
 elif [ -f Cargo.toml ];        then cargo fetch -q
 fi
-echo "worktree=$wt  branch=$branch"
+# IDE: registra/abre o worktree no editor escolhido (campo `ide` do noclaf.json de
+# origem). Best-effort — o grupo `{ …; } || true` neutraliza o `set -e`, então NUNCA
+# derruba o implement, mesmo sem `code`/`xed` no PATH ou sem `ide` configurado.
+{
+  ide=$(sed -n 's/.*"ide"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$root/noclaf.json" | head -1)
+  if [ "$ide" = "vscode" ] && command -v code >/dev/null 2>&1; then
+    code --add "$wt"                                    # aparece no Source Control (multi-root)
+  elif [ "$ide" = "xcode" ] && command -v xed >/dev/null 2>&1; then
+    ws=$(find "$wt" -maxdepth 2 \( -name '*.xcworkspace' -o -name '*.xcodeproj' \) -print -quit)
+    [ -n "$ws" ] && xed "$ws"                           # abre em janela própria (Xcode não tem multi-root)
+  fi
+} >/dev/null 2>&1 || true
+echo "worktree=$wt  branch=$branch  ide=${ide:-none}"
 ```
 
 Regra: **nunca** reutilize uma branch não relacionada em que você por acaso está — o bloco
@@ -89,33 +101,11 @@ sempre parte da default quando a branch não existe. Faça **todo o resto dentro
 - **SPEC:** vire `ready → in-progress` e crie um pequeno **arquivo de progresso** (checklist
   espelhando as Tarefas), conforme convenção do repo.
 
-## 2b. Registre o worktree no IDE
-
-Depois que o worktree existe, surface-o no editor do usuário automaticamente — em vez de ele
-fazer isso na mão. Leia o campo `ide` do `noclaf.json` da raiz de origem (`root`) e aja
-conforme o valor. **Qualquer outro valor (ou ausente) → pule este passo em silêncio.** Este
-passo é best-effort: **nunca falhe o implement** por causa dele; no máximo, mencione no
-handoff que o worktree está em `$wt` pra abrir manualmente.
-
-- **`vscode`** — adiciona o worktree ao workspace da janela ativa (aparece no **Source
-  Control**, multi-root):
-
-  ```bash
-  command -v code >/dev/null 2>&1 && code --add "$wt" || true
-  ```
-
-- **`xcode`** — o Xcode não tem multi-root; então **abre** o projeto/workspace do worktree
-  numa janela própria via `xed` (prefere `.xcworkspace`, cai pro `.xcodeproj`):
-
-  ```bash
-  if command -v xed >/dev/null 2>&1; then
-    ws=$(find "$wt" -maxdepth 2 -name '*.xcworkspace' -print -quit)
-    [ -z "$ws" ] && ws=$(find "$wt" -maxdepth 2 -name '*.xcodeproj' -print -quit)
-    [ -n "$ws" ] && xed "$ws" || true
-  fi
-  ```
-
-- O binário do editor (`code`/`xed`) ausente do PATH → **não falhe**; siga normalmente.
+> **IDE.** O bloco acima já **registra o worktree no editor** conforme o `ide` do
+> `noclaf.json`: `vscode` → `code --add` (aparece no Source Control da janela ativa);
+> `xcode` → `xed` no `.xcworkspace`/`.xcodeproj` (janela própria). É best-effort e nunca
+> falha o implement. A saída `ide=…` do bloco confirma o que foi detectado — se vier
+> `ide=none`, o `noclaf.json` não tem o campo (rode `noclaf init` de novo pra escolher).
 
 ## 3. Implemente
 
