@@ -1,3 +1,13 @@
+---
+title: Lovable / React (Vite) — regras de stack
+description: House-style do app Lovable/React — stack obrigatória (ShadcnUI, TanStack Query/Form + Zod, Axios, Supabase/RLS), convenções de código, segurança e UI. Aperta o baseline de front-end.
+applies-to: front-end/lovable
+extends: ./rules.md
+skills: shadcn/ui, supabase/agent-skills/supabase-postgres-best-practices
+---
+
+> Assume as regras gerais de front-end (`rules.md`). Aqui o **house-style** específico do app Lovable/React.
+
 ## Stack obrigatória
 
 - ShadcnUI + Tailwind

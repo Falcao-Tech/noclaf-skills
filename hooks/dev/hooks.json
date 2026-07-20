@@ -7,6 +7,14 @@
       "description": "Bloqueia `git commit` quando o diff staged adiciona um bloco de comentário em prosa acima de 3 linhas — backstop de qualidade de comentários (estilo ponytail). Roda antes do Bash e cancela o commit (exit 2); pra pular deliberadamente, use `git commit --no-verify`.",
       "script": "check-comment-length.py",
       "clients": ["claude-code"]
+    },
+    {
+      "id": 2,
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "description": "Bloqueia `git commit` quando um arquivo staged passa de 300 linhas ou tem função acima de 30 linhas — backstop mecânico de tamanho (file-length + function-length). Cobre linguagens de chave (TS/Swift/Kotlin/…) e Python. Cancela o commit (exit 2); pra pular deliberadamente, use `git commit --no-verify`.",
+      "script": "check-code-size.py",
+      "clients": ["claude-code"]
     }
   ]
 }
