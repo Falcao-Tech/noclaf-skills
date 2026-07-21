@@ -76,19 +76,35 @@ elif [ -f yarn.lock ];         then yarn --silent
 elif [ -f poetry.lock ];       then poetry install -q
 elif [ -f Cargo.toml ];        then cargo fetch -q
 fi
-# IDE: registra/abre o worktree no editor escolhido (campo `ide` do noclaf.json de
-# origem). Best-effort — o grupo `{ …; } || true` neutraliza o `set -e`, então NUNCA
-# derruba o implement, mesmo sem `code`/`xed` no PATH ou sem `ide` configurado.
+# IDE: registra/abre o worktree no editor escolhido (campo `ide` do noclaf.json de origem).
+# Best-effort — `{ …; } || true` neutraliza o `set -e`, NUNCA derruba o implement. Imprime
+# diagnóstico (ide detectado + se o binário foi achado) pra não falhar em silêncio.
+ide_msg="pulado"
 {
-  ide=$(sed -n 's/.*"ide"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$root/noclaf.json" | head -1)
-  if [ "$ide" = "vscode" ] && command -v code >/dev/null 2>&1; then
-    code --add "$wt"                                    # aparece no Source Control (multi-root)
-  elif [ "$ide" = "xcode" ] && command -v xed >/dev/null 2>&1; then
-    ws=$(find "$wt" -maxdepth 2 \( -name '*.xcworkspace' -o -name '*.xcodeproj' \) -print -quit)
-    [ -n "$ws" ] && xed "$ws"                           # abre em janela própria (Xcode não tem multi-root)
+  # Parse via node (robusto a formatação) — o noclaf já exige node.
+  ide=$(node -e "try{process.stdout.write(String(require(process.argv[1]).ide||''))}catch(e){}" "$root/noclaf.json" 2>/dev/null)
+  if [ "$ide" = "vscode" ]; then
+    # `code` pode não estar no PATH do shell não-interativo do agente — procura no bundle.
+    code_bin="$(command -v code 2>/dev/null)"
+    [ -z "$code_bin" ] && [ -x "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ] && code_bin="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+    if [ -n "$code_bin" ]; then
+      "$code_bin" --add "$wt" && ide_msg="worktree adicionado ao VS Code (Source Control)"
+    else
+      ide_msg="ide=vscode mas o comando \`code\` não foi encontrado — instale-o (VS Code → 'Shell Command: Install code command in PATH')"
+    fi
+  elif [ "$ide" = "xcode" ]; then
+    if command -v xed >/dev/null 2>&1; then
+      ws=$(find "$wt" -maxdepth 2 \( -name '*.xcworkspace' -o -name '*.xcodeproj' \) -print -quit)
+      [ -n "$ws" ] && xed "$ws" && ide_msg="worktree aberto no Xcode"
+    else
+      ide_msg="ide=xcode mas \`xed\` não foi encontrado"
+    fi
+  else
+    ide_msg="sem ide no noclaf.json (rode \`noclaf init\` pra escolher)"
   fi
-} >/dev/null 2>&1 || true
+} 2>&1 || true
 echo "worktree=$wt  branch=$branch  ide=${ide:-none}"
+echo "ide: $ide_msg"
 ```
 
 Regra: **nunca** reutilize uma branch não relacionada em que você por acaso está — o bloco

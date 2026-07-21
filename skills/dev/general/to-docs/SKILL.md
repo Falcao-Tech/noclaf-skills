@@ -36,5 +36,12 @@ Leia **apenas** o `*-PATTERN.md` correspondente e execute-o. Regras comuns aos t
 
 ## 2. Feche
 
-Imprima o caminho criado (e o id, quando houver) e o **próximo passo** (detalhado no PATTERN):
-spec → refinar → `to-tickets`/`/implement`; bug → `/implement`; adr → refinar → `accepted`.
+Imprima o caminho criado (e o id, quando houver). Então, **por tipo**:
+
+- **spec → encadeie no `to-tickets` automaticamente.** Invoque a skill `to-tickets` sobre a
+  spec recém-criada pra fatiar em tickets (DAG) e publicá-los (local em `docs/tickets/` por
+  padrão; NOS + GitHub só pra trabalho complexo confirmado). **Toda spec já sai com seus
+  tickets** — não pare esperando o usuário pedir. Se a spec ficou muito aberta (várias
+  Questões em aberto), avise que vale refinar antes, mas ainda encadeie.
+- **bug** → próximo passo `/implement`.
+- **adr** → refinar → marcar `accepted`.
