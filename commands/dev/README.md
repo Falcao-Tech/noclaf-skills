@@ -4,8 +4,9 @@ O loop de **spec-driven dev**: escrever a intenção antes do código.
 
 ## Índice
 
-- [implement](implement.md) — implementa spec/bug/tickets ponta-a-ponta; faz stage, nunca commit.
-- [ship](ship.md) — commit → push → abre PR de uma branch de trabalho revisada (funciona sem `/implement`; só recusa branch-base).
+- [build](build.md) — **loop autônomo** do ticket ao PR: worktree → por ticket `code-executor` → `code-reviewer` → gate (até 15 iterações) → lint/build/testes → commit → push → PR. Default `--auto`; `--review` adiciona gate humano. Orquestra o `implement` + os agentes + o `ship`.
+- [implement](implement.md) — implementa spec/bug/tickets ponta-a-ponta; faz stage, nunca commit. (Peça manual do loop.)
+- [ship](ship.md) — commit → push → abre PR de uma branch de trabalho revisada (funciona sem `/implement`; só recusa branch-base). (Peça manual do loop.)
 - [to-docs](to-docs.md) — documenta um repo existente (engenharia-reversa) via `repo-scout` em paralelo; roteia por tipo (`docs/architecture/` + menção no `AGENTS.md`, `docs/specs/`, `docs/decisions/`).
 
 > Montar o SDD ([init-sdd](../../skills/dev/general/init-sdd/SKILL.md)), criar docs spec/bug/adr ([to-doc](../../skills/dev/general/to-doc/SKILL.md)) e decompor em tickets ([to-tickets](../../skills/dev/general/to-tickets/SKILL.md)) são **skills**, não commands.
