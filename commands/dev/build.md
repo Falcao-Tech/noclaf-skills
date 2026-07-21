@@ -64,9 +64,13 @@ ausente/não autenticado → commit + push seguem; imprima o comando do PR pro h
 
 ## 5. Linkagem + entrega
 
-- Linke o PR à(s) **issue(s) no GitHub** e mova a **tarefa no NOS** pra review/done (tools
-  `nos_*`) — se o ticket tiver esse vínculo.
-- Registre a entrega (o que foi feito, quantos tickets) pro acompanhamento.
+Por ticket entregue:
+
+- **Move a tarefa no NOS** pra `code_review` (PR aberto) com `nos_move_task`; **linka o PR**
+  como comentário (`nos_comment_task`) e à issue no GitHub, se houver esse vínculo.
+- **Registra a entrega** com **`nos_record_delivery`**: `title` (o ticket), `pr_url`,
+  `iterations` (quantas passadas do loop até passar no gate) e `task_id` se houver. Isso
+  alimenta a analítica de entrega no NOS ("quanto já foi entregue").
 
 ## 6. Handoff
 
