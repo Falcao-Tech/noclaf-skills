@@ -64,13 +64,14 @@ ausente/não autenticado → commit + push seguem; imprima o comando do PR pro h
 
 ## 5. Linkagem + entrega
 
-Por ticket entregue:
+O `/ship` (passo 4) já **fecha as issues entregues e registra a entrega** (seu passo 7: valida,
+fecha o GitHub, move a task no NOS pra `done` e roda `nos_record_delivery`). Aqui só
+**complemente com o que é do build**, por ticket entregue — **não re-feche nem re-mova** o que
+o `/ship` já fechou:
 
-- **Move a tarefa no NOS** pra `code_review` (PR aberto) com `nos_move_task`; **linka o PR**
-  como comentário (`nos_comment_task`) e à issue no GitHub, se houver esse vínculo.
-- **Registra a entrega** com **`nos_record_delivery`**: `title` (o ticket), `pr_url`,
-  `iterations` (quantas passadas do loop até passar no gate) e `task_id` se houver. Isso
-  alimenta a analítica de entrega no NOS ("quanto já foi entregue").
+- **iterations** — o `/ship` não sabe quantas passadas do loop cada ticket levou; adicione/atualize
+  o `iterations` no registro de entrega daquele ticket (é a métrica de esforço do loop).
+- **linke o PR** como comentário na task (`nos_comment_task`) se ainda não estiver.
 
 ## 6. Handoff
 

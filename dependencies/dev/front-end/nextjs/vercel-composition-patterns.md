@@ -8,11 +8,11 @@ install: npx skills add vercel-labs/agent-skills/vercel-composition-patterns
 
 # Vercel — composition patterns
 
-Skill **externa** (skills.sh). Reforça `rules/front-end/ssr-rules.md` — fronteira
+Skill **externa** (skills.sh). Reforça `rules/dev/front-end/nextjs/rules.md` — fronteira
 server/client, onde colocar `'use client'`, composição de Server Components.
 
 > Instalador de linha única; a CLI oferece rodar no `init`/`sync`.
 
 ## Reforça
 
-- `rules/front-end/ssr-rules.md` — server vs client, boundaries, streaming.
+- `rules/dev/front-end/nextjs/rules.md` — server vs client, boundaries, streaming.

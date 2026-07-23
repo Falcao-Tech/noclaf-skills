@@ -1,7 +1,7 @@
 ---
 id: 23
 name: to-tickets
-description: Fatia uma spec, plano ou a conversa atual em tickets tracer-bullet (fatias verticais) com DAG de bloqueio, e publica — local (docs/tickets/) ou, pra trabalho complexo confirmado, como issues + sub-issues no NOS + GitHub. Use quando o usuário pedir pra "quebrar em tickets", "fatiar a spec/o trabalho", "criar issues", ou antes de implementar trabalho grande. Depois é só /implement no frontier.
+description: Fatia uma spec, plano ou a conversa atual em tickets tracer-bullet (fatias verticais) com DAG de bloqueio, e publica direto — task por ticket no NOS (via MCP, funciona no Cowork) + issues/sub-issues no GitHub quando o gh existe + registro local em docs/tickets/. Sem gate de confirmação. Use quando o usuário pedir pra "quebrar em tickets", "fatiar a spec/o trabalho", "criar issues", ou antes de implementar trabalho grande. Depois é só /implement no frontier.
 model: sonnet
 effort: high
 ---
@@ -52,23 +52,25 @@ Itere até o usuário aprovar.
 
 ## 5. Publique os tickets
 
-Local é o **padrão**; **NOS + GitHub** é para trabalho relativamente complexo e **só com
-confirmação do usuário** (os tickets são os mesmos — muda só a forma das arestas). Use os
-**templates** de [TICKET-PATTERNS.md](TICKET-PATTERNS.md).
+Publique **direto no NOS + GitHub, sem gate** — não pergunte, não trave. Os três canais têm
+os mesmos tickets; muda só a forma das arestas. Use os **templates** de
+[TICKET-PATTERNS.md](TICKET-PATTERNS.md). Nunca bloqueie por um canal faltar: publique no que
+der e registre o que faltou.
 
-- **Local (padrão)** → escreva `docs/tickets/<stem-da-spec | slug>.md` (crie a pasta se
-  faltar), todos os tickets em ordem de dependência (bloqueadores primeiro), cada um com seu
-  "Bloqueado por". Use o *template de arquivo*.
-- **NOS + GitHub (complexo → PERGUNTE antes)** → se o trabalho é grande e o usuário
-  **confirma** criar issues:
-  - **GitHub** (dependência `gh`) — uma issue por ticket em ordem de dependência para cada
-    aresta referenciar identificadores reais (`gh issue create …`). Onde a spec já virou
-    issue-pai (frontmatter `issue:`), crie os tickets como **sub-issues** dela; senão use
-    "Bloqueado por #N" no corpo (o GitHub não tem campo nativo de "blocked by"). Aplique o
-    label `ready-for-agent`. **Não** feche nem modifique a issue-pai.
-  - **NOS** — garanta o projeto da sessão (`nos_set_project` se preciso) e crie uma task por
-    ticket com `nos_create_task` (corpo = "O que construir" + Critérios + "Bloqueado por").
-  - Registre no `docs/tickets/…` os identificadores criados, para o `/implement` referenciar.
+- **NOS (sempre — funciona em qualquer cliente, inclusive Cowork)** → garanta o projeto da
+  sessão (`nos_set_project` se preciso) e crie uma task por ticket com `nos_create_task`
+  (corpo = "O que construir" + Critérios + "Bloqueado por"). As tools `nos_*` são MCP e **não
+  dependem de shell**, então rodam no Cowork — este é o canal que nunca falta.
+- **GitHub (quando o `gh` estiver disponível)** → uma issue por ticket em ordem de dependência
+  (`gh issue create …`). Onde a spec já virou issue-pai (`issue:` no frontmatter), crie os
+  tickets como **sub-issues** dela; senão "Bloqueado por #N" no corpo (o GitHub não tem campo
+  nativo de "blocked by"). Aplique o label `ready-for-agent`. **Não** feche/modifique a
+  issue-pai. `gh` ausente/não-autenticado (ex.: Cowork sem shell) → **pule o GitHub sem
+  travar** e siga com NOS + local.
+- **Local (registro)** → escreva `docs/tickets/<stem-da-spec | slug>.md` (crie a pasta se
+  faltar), todos os tickets em ordem de dependência, cada um com "Bloqueado por" **e os
+  identificadores criados** (`task_id` do NOS, `#N` do GitHub) — é o que o `/implement` e o
+  `/ship` leem depois pra referenciar e fechar.
 
 ## Depois
 

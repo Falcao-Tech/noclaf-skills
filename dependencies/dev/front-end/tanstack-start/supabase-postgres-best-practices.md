@@ -8,11 +8,11 @@ install: npx skills add supabase/agent-skills/supabase-postgres-best-practices
 
 # Supabase — Postgres best practices
 
-Skill **externa** (skills.sh), oficial da Supabase. Reforça `rules/front-end/lovable-rules.md`
+Skill **externa** (skills.sh), oficial da Supabase. Reforça `rules/dev/front-end/tanstack-start/rules.md`
 na parte de dados — RLS em toda tabela, policies por operação, sem `service_role` no client.
 
 > Instalador de linha única; a CLI oferece rodar no `init`/`sync`.
 
 ## Reforça
 
-- `rules/front-end/lovable-rules.md` — segurança Supabase/RLS.
+- `rules/dev/front-end/tanstack-start/rules.md` — segurança Supabase/RLS.

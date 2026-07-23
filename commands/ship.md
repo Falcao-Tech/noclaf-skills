@@ -1,6 +1,6 @@
 ---
 id: 6
-description: Commit → push → abre PR de uma branch de trabalho já revisada — normalmente após /implement, mas funciona em qualquer branch de feature (inclusive feita à mão), sem depender dele. Divide docs vs código em Conventional Commits (título em inglês ≤80 chars, corpo em português ≤120 chars), confirma o plano e então dispara.
+description: Commit → push → abre PR de uma branch de trabalho já revisada — normalmente após /implement, mas funciona em qualquer branch de feature (inclusive feita à mão), sem depender dele. Divide docs vs código em Conventional Commits (título em inglês ≤80 chars, corpo em português ≤120 chars), confirma o plano, dispara e então **fecha as issues/tasks entregues** (GitHub + NOS, validando que não estão já completas).
 argument-hint: [branch-base]
 allowed-tools: Bash, Read, Grep, Glob, Edit, Agent, Skill
 model: sonnet
@@ -96,7 +96,24 @@ Mostre ao usuário e **espere aprovação explícita**:
   - **Corpo** = um resumo curto + um link para a spec + os **Critérios de aceitação** da spec como um checklist `- [ ]` (para bugs: root cause + a correção).
   - `gh` faltando / não autenticado, ou sem remote do GitHub? → o commit + push ainda dão certo; **pule o PR**, imprima o comando `gh pr create …` exato para o usuário rodar e diga o porquê.
 
-## 7. Remova o worktree (só se o push deu certo)
+## 7. Feche as issues/tasks entregues (valide antes)
+
+Só se o **push + PR do passo 6 deram certo** — o trabalho está entregue, então feche o que
+ele resolve. Descubra os identificadores no registro: `docs/tickets/<stem>.md` (o `task_id` do
+NOS / `#N` do GitHub que o `/to-tickets` gravou) e/ou o `issue:` do frontmatter da spec. Para
+cada um, **cheque o estado primeiro e só complete o que ainda está aberto** (idempotente —
+nunca re-feche o que já está completo):
+
+- **GitHub** (se `gh` disponível) → `gh issue view <n> --json state -q .state`. `OPEN` →
+  `gh issue close <n> --comment "Entregue no PR <url>"`. Já `CLOSED` → pule.
+- **NOS** → `nos_get_task` pra ver o estado; se ainda não entregue, `nos_move_task` pro estado
+  de entrega (`done`/`delivered`) e `nos_record_delivery` (`title`, `pr_url`, `task_id`). Já
+  entregue → pule. As tools `nos_*` rodam em qualquer cliente (inclusive Cowork).
+
+Branch feita à mão, sem issue/task vinculada → pule este passo. **Nunca invente** uma issue
+pra fechar.
+
+## 8. Remova o worktree (só se o push deu certo)
 
 **Só se o push do passo 6 deu certo.** Se o push falhou ou foi pulado (sem remote),
 **mantenha** o worktree — nunca remova trabalho sem push. Se removeu, rode **este bloco de
@@ -118,6 +135,6 @@ fi
 A **branch é mantida** (o PR aponta pra ela); só o diretório sai. Re-checkout depois se
 precisar de follow-up.
 
-## 8. Handoff
+## 9. Handoff
 
-Imprima, nesta ordem: os SHAs dos commits + títulos, a branch com push feito, e se o **worktree foi removido** (`<path>`, de volta no repo principal com a branch preservada) ou **mantido** (com o porquê). **Por último, em sua própria linha: a URL do PR** — a saída clicável do `gh pr create` — ou o motivo do skip se o passo do PR foi pulado. O link do PR é a última coisa que o usuário vê.
+Imprima, nesta ordem: os SHAs dos commits + títulos, a branch com push feito, as **issues/tasks fechadas** (GitHub `#N` / NOS `task_id`, ou "nenhuma vinculada"), e se o **worktree foi removido** (`<path>`, de volta no repo principal com a branch preservada) ou **mantido** (com o porquê). **Por último, em sua própria linha: a URL do PR** — a saída clicável do `gh pr create` — ou o motivo do skip se o passo do PR foi pulado. O link do PR é a última coisa que o usuário vê.

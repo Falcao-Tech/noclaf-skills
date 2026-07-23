@@ -8,11 +8,11 @@ install: npx skills add shadcn/ui/shadcn
 
 # shadcn/ui
 
-Skill **externa** (skills.sh), oficial do shadcn. Reforça `rules/front-end/lovable-rules.md`
+Skill **externa** (skills.sh), oficial do shadcn. Reforça `rules/dev/front-end/tanstack-start/rules.md`
 na parte de UI — usar o componente do ShadcnUI quando existir, em vez de recriar.
 
 > Instalador de linha única; a CLI oferece rodar no `init`/`sync`.
 
 ## Reforça
 
-- `rules/front-end/lovable-rules.md` — ShadcnUI + Tailwind, Combobox, Chart, etc.
+- `rules/dev/front-end/tanstack-start/rules.md` — ShadcnUI + Tailwind, Combobox, Chart, etc.
