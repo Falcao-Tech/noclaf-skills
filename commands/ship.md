@@ -26,10 +26,12 @@ case "$cur" in main|master|dev|"$def") echo "PARE: '$cur' é branch-base — cri
 echo "branch de trabalho: $cur"
 ```
 
-Passou → derive o tipo (pra escolher o tipo do commit de código + montar o corpo do PR):
+Passou → derive o tipo (pra escolher o tipo do commit de código + montar o corpo do PR) e
+**extraia o `ticket-id`** da branch (`[A-Z]+-[0-9]+` p/ chave do NOS, ou `#?[0-9]+` p/ issue
+do GitHub) — guarde pra seção `Ticket` do corpo do PR (§6); nenhum casou → `ticket-id` vazio:
 
-- `feature/<id>-<slug>` → **spec**: `feat:` por padrão; leia a spec em `docs/specs/<area>/<slug>.md` pro corpo.
-- `fix/<slug>` → **bug**: `fix:` por padrão.
+- `feature/<ticket-id>-<slug>` (ou `feature/<slug>`) → **spec**: `feat:` por padrão; leia a spec em `docs/specs/<area>/<slug>.md` pro corpo.
+- `fix/<ticket-id>-<slug>` (ou `fix/<slug>`) → **bug**: `fix:` por padrão.
 - **Qualquer outra branch de trabalho** (feita à mão, sem passar pelo `/implement`) → **prossiga**:
   infira o tipo pela natureza do diff (`feat`/`fix`/`refactor`/…) — ou pergunte se ambíguo — e,
   sem spec vinculada, monte o corpo do PR a partir do diff + dos commits da branch. **Não exija `/implement`.**
@@ -93,7 +95,32 @@ Mostre ao usuário e **espere aprovação explícita**:
 - **Push** com upstream: `git push -u origin <branch>`. Sem remote `origin`? → **PARE** com orientação; não fabrique um remote.
 - **Abra o PR** para `<base>` com `gh pr create --base <base> --head <branch>`:
   - **Título** = o título do commit de código (caia de volta para o título de docs se não houver commit de código).
-  - **Corpo** = um resumo curto + um link para a spec + os **Critérios de aceitação** da spec como um checklist `- [ ]` (para bugs: root cause + a correção).
+  - **Corpo** = o **template estruturado** abaixo (seções fixas, nesta ordem). Preencha cada
+    uma a partir da fonte (spec/bug/ticket); sem conteúdo pra uma seção, escreva `n/a` —
+    **nunca omita o cabeçalho**: o formato fixo é o que o review automatizado (ex.: Visor)
+    consome. A seção `Ticket` é a âncora legível por máquina — liste o `ticket-id` extraído da
+    branch (§0) e/ou os identificadores do registro de tickets (§7); vários ids num build
+    multi-ticket → liste todos.
+
+    ```markdown
+    ## Ticket
+    <ticket-id(s) ou link(s) da issue/task; `sem ticket vinculado` se não houver>
+
+    ## Escopo
+    <o que este PR entrega — 1-3 linhas>
+
+    ## Fora de escopo
+    <o que deliberadamente ficou de fora (do `Fora de escopo` da spec, quando houver)>
+
+    ## Arquivos/funções afetados
+    <lista curta dos arquivos/funções tocados>
+
+    ## Cenários de teste
+    <checklist `- [ ]`: SPEC → os Critérios de aceitação; BUG → a reprodução que deixou de reproduzir>
+
+    ## Rollout & kill-switch
+    <como reverter / flag de feature; `n/a` se a mudança não tem risco de rollout>
+    ```
   - `gh` faltando / não autenticado, ou sem remote do GitHub? → o commit + push ainda dão certo; **pule o PR**, imprima o comando `gh pr create …` exato para o usuário rodar e diga o porquê.
 
 ## 7. Feche as issues/tasks entregues (valide antes)

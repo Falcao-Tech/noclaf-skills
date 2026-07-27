@@ -54,8 +54,11 @@ Isto é **determinístico** — não explore com `ls`/`git branch`/`git worktree
 vez só**: ele acha a raiz e a default branch, cria-ou-reutiliza o worktree e instala deps.
 
 - `stem`: SPEC → nome do arquivo da spec sem `.md` (já é `<id>-<slug>`; **não** re-prefixe o
-  id). BUG → `<slug>`. TICKETS → `<slug>` curto da descrição.
-- `branch`: SPEC/TICKETS → `feature/<stem>`. BUG → `fix/<stem>`.
+  id). BUG → `<slug>`. TICKETS → `<ticket-id>-<slug>` quando houver um id de ticket (chave do
+  NOS tipo `NOS-151`, ou `<n>` de uma issue do GitHub); sem id vinculado → `<slug>` curto.
+- `branch`: SPEC/TICKETS → `feature/<stem>`. BUG → `fix/<stem>`. O prefixo (`feature`/`fix`)
+  dirige a inferência de tipo do `/ship`; o `<ticket-id>` embutido no stem deixa a chave do
+  ticket **extraível por regex** da branch (`[A-Z]+-[0-9]+` ou `#?[0-9]+`).
 
 ```bash
 set -euo pipefail

@@ -38,3 +38,16 @@ extends: "—"
 
 - **Trate ou propague** o erro — nunca engula silenciosamente.
 - Comportamento novo ou bug corrigido merece **teste**; teste o **contrato**, não a implementação.
+
+## Critérios de review
+
+Subconjunto **verificável no diff** das regras acima (o gate consome; o guia de implementação — DRY, YAGNI, composição — fica nas seções anteriores):
+
+- [ ] Nenhum arquivo passa de **300 linhas**; nenhuma função passa de **30 linhas**.
+- [ ] Nenhum comentário com mais de **1 linha**.
+- [ ] Sem código morto, import não usado ou log de debug commitado.
+- [ ] Sem `any`/tipo escapado na borda; tipagem explícita nas interfaces públicas.
+- [ ] Sem número/string mágico — constantes nomeadas.
+- [ ] Identificadores em inglês; texto de UI no idioma do produto.
+- [ ] Erro tratado ou propagado — nunca engolido em silêncio.
+- [ ] Comportamento novo ou bug corrigido acompanha teste de contrato.

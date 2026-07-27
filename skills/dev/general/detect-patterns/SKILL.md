@@ -31,7 +31,12 @@ está claro no código, **omita** — melhor curto e certo do que longo e especu
 
 - Markdown enxuto: **poucas dezenas de linhas** no total. É contexto pra outros agentes — não
   pode inflar. Prefira bullets curtos a parágrafos.
-- Cabeçalho fixo + seções: `## Estrutura`, `## Naming`, `## Stack`, `## Padrões`, `## Testes`.
+- Cabeçalho fixo + seções: `## Estrutura`, `## Naming`, `## Stack`, `## Padrões`, `## Testes`,
+  e por fim `## Critérios` — o subconjunto dos padrões observados **reescrito como checklist
+  verificável** (`- [ ]`), do tipo "código novo segue o padrão X já usado no repo" (ex.: "Dados
+  via TanStack Query, não fetch solto"; "Schema com Zod na borda"). É o que alinha o review ao
+  que o repo **já faz**; junta com os `## Critérios de review` das rules no `docs/_review.md` (WS2-B).
+  Só inclua critério de padrão **de fato observado** — mesma regra de ouro, sem especular.
 - Comece o arquivo com: `<!-- Gerado por detect-patterns. Reflete o código atual; rode de novo pra atualizar. -->`
 - **Sobrescreva** o arquivo se já existir. **Não toque em nenhum outro arquivo.**
 
