@@ -34,11 +34,12 @@ mudança fácil."* Contexto já suficiente na conversa → pule este passo.
 
 ## 3. Rascunhe as fatias verticais
 
-Aplique as **regras de fatia vertical** de [TICKET-PATTERNS.md](TICKET-PATTERNS.md). Dê a cada
-ticket suas **arestas de bloqueio** — os tickets que precisam terminar antes dele começar;
-sem bloqueador → pode começar já. Para uma mudança mecânica de **raio amplo** (renomear
-coluna, retipar símbolo compartilhado), não force um tracer bullet — use o playbook
-**expand–contract** do mesmo arquivo.
+Aplique as **regras de fatia vertical** de [TICKET-PATTERNS.md](TICKET-PATTERNS.md). Favoreça
+**poucas fatias** que entregam comportamento (ver *Granularidade*): sub-passos técnicos da mesma
+fatia viram **itens de checklist**, não tickets separados. Dê a cada ticket suas **arestas de
+bloqueio** — os tickets que precisam terminar antes dele começar; sem bloqueador → pode começar
+já. Para uma mudança mecânica de **raio amplo** (renomear coluna, retipar símbolo
+compartilhado), não force um tracer bullet — use o playbook **expand–contract** do mesmo arquivo.
 
 ## 4. Valide com o usuário
 
@@ -58,9 +59,12 @@ os mesmos tickets; muda só a forma das arestas. Use os **templates** de
 der e registre o que faltou.
 
 - **NOS (sempre — funciona em qualquer cliente, inclusive Cowork)** → garanta o projeto da
-  sessão (`nos_set_project` se preciso) e crie uma task por ticket com `nos_create_task`
-  (corpo = "O que construir" + Critérios + "Bloqueado por"). As tools `nos_*` são MCP e **não
-  dependem de shell**, então rodam no Cowork — este é o canal que nunca falta.
+  sessão (`nos_set_project` se preciso). Por ticket: **título humano** (orientado a resultado,
+  sem `WS·[repo]`), `nos_create_task` com **descrição curta** (uma linha + `### Contexto` com
+  repo/bloqueadores), e então **checklists nativos** via `nos_add_checklist` — uma **Implementação**
+  (passos técnicos) e uma **Definition of Done** (critérios). Ver os templates em TICKET-PATTERNS.
+  `nos_add_checklist` indisponível → DoD como `- [ ]` na descrição. As tools `nos_*` são MCP e
+  **não dependem de shell**, então rodam no Cowork — este é o canal que nunca falta.
 - **GitHub (quando o `gh` estiver disponível)** → uma issue por ticket em ordem de dependência
   (`gh issue create …`). Onde a spec já virou issue-pai (`issue:` no frontmatter), crie os
   tickets como **sub-issues** dela; senão "Bloqueado por #N" no corpo (o GitHub não tem campo
