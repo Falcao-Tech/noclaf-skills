@@ -1,5 +1,5 @@
 ---
-description: Loop de build autônomo — do ticket ao PR. Cria o worktree/branch e, por ticket, roda code-executor → code-reviewer → gate (até 15 iterações por ticket), depois lint/build/testes, commit → push → PR. Default **--auto** (autônomo); **--review** adiciona um gate humano antes do push/PR. Orquestra o /implement (worktree), os agentes do trio e o /ship (fecho) — não os reescreve.
+description: Loop de build autônomo — do ticket ao done. Cria o worktree/branch e, por ticket, roda code-executor → code-reviewer → gate (até 15 iterações por ticket), depois lint/build/testes, commit → push → PR, e então o pr-reviewer (2ª opinião pós-push) até approved ou escalar. Default **--auto** (autônomo); **--review** adiciona um gate humano antes do push/PR. Orquestra o /implement (worktree), os agentes code-executor/code-reviewer/pr-reviewer e o /ship (fecho) — não os reescreve.
 argument-hint: <spec/bug/tickets ref> [--review]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, Skill
 model: sonnet
@@ -8,8 +8,8 @@ model: sonnet
 Você é o **orquestrador** do loop de build: **$ARGUMENTS**.
 
 Você **não implementa nem revisa você mesmo** — delega aos subagentes e amarra o fluxo.
-Reusa peças que já existem: o **worktree** do `/implement`, os agentes **code-executor** e
-**code-reviewer**, e o fecho do `/ship`.
+Reusa peças que já existem: o **worktree** do `/implement`, os agentes **code-executor**,
+**code-reviewer** e **pr-reviewer**, e o fecho do `/ship`.
 
 ## 0. Modo + trabalho
 
@@ -38,7 +38,8 @@ um contador de iterações e rode:
    **critérios de aceitação** do ticket. Devolve `approved` ou `changes_requested` + motivos.
 3. **Gate** (veredito canônico do reviewer — o token `approved`/`changes_requested`):
    - `approved` → registre o **veredito estruturado** do ticket `{ verdict: approved,
-     iterations: <contador> }` (alimenta a entrega, §5) e vá pro próximo.
+     iterations: <contador> }` (é o gate interno/pré-push — guarde o contador; o §5 reusa este
+     mesmo contador se o `pr-reviewer` pedir uma nova passada) e vá pro próximo.
    - `changes_requested` **e** iterações < **15** (teto explícito) → volte ao (1) passando os
      **Motivos** como instrução; incremente o contador.
    - iterações = **15** (teto) → **ESCALE**: pare o loop **sem push**, registre `{ verdict:
@@ -63,26 +64,68 @@ Re-rode **lint + build + testes** do repo (os scripts que existem — não inven
 Então rode o `/ship`: divide em `docs:` + `<feat|fix|…>:`, faz **push** com upstream e abre o
 **PR** (`gh pr create`) — corpo no **template estruturado** do `/ship §6` (Ticket, Escopo,
 Fora de escopo, Arquivos/funções afetados, Cenários de teste, Rollout & kill-switch). `gh`
-ausente/não autenticado → commit + push seguem; imprima o comando do PR pro humano.
+ausente/não autenticado → commit + push seguem; imprima o comando do PR pro humano. Ao abrir o
+PR, o `/ship` já chama `nos_attach_pr(task_id, pr_url)` por ticket vinculado — a task entra em
+`code_review`/`review_state=pending` (**não** vai a `done` aqui).
 
-## 5. Linkagem + entrega
+## 5. Review externo pós-PR (pr-reviewer + gate no NOS)
 
-O `/ship` (passo 4) já **fecha as issues entregues e registra a entrega** (seu passo 7: valida,
-fecha o GitHub, move a task no NOS pra `done` e roda `nos_record_delivery`). Aqui só
-**complemente com o que é do build**, por ticket entregue — **não re-feche nem re-mova** o que
-o `/ship` já fechou:
+Com o PR aberto (task(s) já em `code_review`/`pending`, §4), rode o subagente **pr-reviewer**
+(contexto limpo, read-only) sobre o diff **do PR**: `git diff <base>...HEAD`, a mesma `<base>`
+usada no fecho. Ele devolve o veredito canônico `approved`/`changes_requested` + motivos —
+mesmo formato do `code-reviewer`, mas visão de integração (diff contra o que já existia, não só
+o hunk).
 
-- **veredito + iterations** — o `/ship` não sabe o resultado do gate nem quantas passadas cada
-  ticket levou. No registro de entrega daquele ticket (`nos_record_delivery`), grave:
-  `iterations` (esforço do loop), `review_verdict` (o `approved`/`changes_requested` do gate §2)
-  e `reviewer: internal` (é o gate interno — o slot `visor` fica pro review externo). São a
-  métrica de esforço **+** resultado do loop.
-- **linke o PR** como comentário na task (`nos_comment_task`) se ainda não estiver.
+Reaja ao veredito **por ticket vinculado ao PR** (`task_id` do registro de tickets, §0/§4):
 
-## 6. Handoff
+- **`approved`** → chame `nos_set_review(task_id, verdict: "approved", reviewer:
+  "pr-reviewer", advance: true)`. A tool move a task pra `done` **e** grava a entrega (chama
+  `nos_record_delivery` internamente, com `review_verdict: approved` e `reviewer: pr-reviewer`)
+  — **não** chame `nos_record_delivery` você mesmo para este ticket (ver §6). Siga pro próximo
+  ticket vinculado, ou pro handoff (§7) se não houver mais.
+- **`changes_requested`** → chame `nos_set_review(task_id, verdict: "changes_requested", note:
+  <motivos do pr-reviewer>)` — mantém a task em `code_review` e posta os motivos como
+  comentário. Identifique a qual ticket cada motivo pertence (pelo arquivo/escopo) e **realimente
+  o code-executor** com os motivos como instrução: uma nova passada do loop do **§2**
+  (code-executor → code-reviewer → gate) **naquele ticket**, **reusando o mesmo contador e o
+  mesmo teto de 15 iterações** dele (não reinicia aqui). Depois de o gate interno aprovar de
+  novo, dê **novo push** (via `/ship` de novo, ou um push simples pra mesma branch/PR) e
+  **re-rode o pr-reviewer** sobre o diff atualizado. Repita até `approved` ou até o teto.
+  - **Teto de 15 estourado** → **ESCALE**: pare sem insistir, reporte ao humano o estado
+    (ticket, PR, motivos pendentes do `pr-reviewer`, iterações consumidas) — a task **fica em
+    `code_review`**, sem `nos_set_review(advance)` e sem entrega.
+- **Degradação** — se o `pr-reviewer` não puder rodar (subagente indisponível, diff
+  inacessível, etc.), **não trave o loop**: caia no veredito do gate interno (`code-reviewer`,
+  §2) daquele ticket como substituto — se ele aprovou, chame `nos_set_review(task_id, verdict:
+  "approved", reviewer: "internal", advance: true)` no lugar; **avise explicitamente** no
+  handoff (§7) que o review externo não rodou e por quê.
 
-Imprima, nesta ordem: **tickets entregues** + **veredito do gate** (`approved`) e iterações por
-ticket, estado de lint/build/testes,
-a branch (e se o worktree foi mantido/removido), e — **por último, em sua própria linha** — a
-**URL do PR**. Se **escalou** no passo 2, deixe claro qual ticket travou e o que falta, e que
-**nada foi pra remote**.
+O **code-reviewer** (§2) continua como 1ª linha, pré-push, ticket a ticket — o **pr-reviewer**
+é a 2ª opinião, pós-push, sobre o PR como um todo. Ele complementa, **não substitui**, o gate
+interno.
+
+## 6. Linkagem + entrega (complemento — sem entrega duplicada)
+
+O `/ship` (§4) já ligou o PR (`nos_attach_pr`) e, no caminho `approved`, o `nos_set_review(...,
+advance: true)` do §5 já **é quem grava a entrega** (com `reviewer: pr-reviewer`, ou `internal`
+na degradação). Aqui só resta:
+
+- **Não chame `nos_record_delivery` de novo** para um ticket que já passou pelo `nos_set_review`
+  do §5 — duplicaria a linha de entrega. Não existe uma tool de "atualizar entrega": se quiser
+  registrar o `iterations` do loop (esforço — o dado que o `nos_set_review` não conhece) como
+  contexto adicional, use `nos_comment_task` ou deixe só no handoff (§7); **nunca** uma segunda
+  `nos_record_delivery`/`nos_set_review(advance)` para o mesmo ticket.
+- **Linke o PR** como comentário na task (`nos_comment_task`) só se ainda não estiver — o
+  `/ship` já cobre isso via `nos_attach_pr`.
+- Ticket que **escalou** no §5 (teto estourado) → nada a registrar aqui; segue em `code_review`
+  sem entrega, aguardando decisão humana.
+
+## 7. Handoff
+
+Imprima, nesta ordem: **tickets entregues** (com o veredito do gate interno §2 e do
+`pr-reviewer` §5, e iterações por ticket) — ou `done` via degradação (§5) quando aplicável —,
+estado de lint/build/testes, a branch (e se o worktree foi mantido/removido), e — **por último,
+em sua própria linha** — a **URL do PR**. Se **escalou** no §2, deixe claro qual ticket travou
+e que **nada foi pra remote**. Se **escalou** no §5 (teto do `changes_requested` pós-PR),
+deixe claro que o PR **está aberto** mas o(s) ticket(s) seguem em `code_review` esperando
+decisão humana. Se o `pr-reviewer` **degradou** para o gate interno, avise isso também.

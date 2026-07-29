@@ -1,6 +1,6 @@
 ---
 id: 6
-description: Commit → push → abre PR de uma branch de trabalho já revisada — normalmente após /implement, mas funciona em qualquer branch de feature (inclusive feita à mão), sem depender dele. Divide docs vs código em Conventional Commits (título em inglês ≤80 chars, corpo em português ≤120 chars), confirma o plano, dispara e então **fecha as issues/tasks entregues** (GitHub + NOS, validando que não estão já completas).
+description: Commit → push → abre PR de uma branch de trabalho já revisada — normalmente após /implement, mas funciona em qualquer branch de feature (inclusive feita à mão), sem depender dele. Divide docs vs código em Conventional Commits (título em inglês ≤80 chars, corpo em português ≤120 chars), confirma o plano, dispara, **liga o PR ao ticket do NOS** (`nos_attach_pr`, entra em review) e **fecha a issue do GitHub** entregue (validando que não está já completa) — o NOS só vai a `done` depois do veredito do review.
 argument-hint: [branch-base]
 allowed-tools: Bash, Read, Grep, Glob, Edit, Agent, Skill
 model: sonnet
@@ -122,20 +122,27 @@ Mostre ao usuário e **espere aprovação explícita**:
     <como reverter / flag de feature; `n/a` se a mudança não tem risco de rollout>
     ```
   - `gh` faltando / não autenticado, ou sem remote do GitHub? → o commit + push ainda dão certo; **pule o PR**, imprima o comando `gh pr create …` exato para o usuário rodar e diga o porquê.
+- **PR aberto com sucesso e há um `task_id` do NOS vinculado** (§0/registro de tickets) →
+  chame `nos_attach_pr(task_id, pr_url)` **na hora**. Ela grava a URL do PR na task, seta
+  `review_state=pending` e move o status pra `code_review` — é o que liga o ticket ao ciclo de
+  review (interno + `pr-reviewer` independente, fora deste comando). Sem `task_id` vinculado →
+  pule, nada a anexar.
 
-## 7. Feche as issues/tasks entregues (valide antes)
+## 7. Feche as issues do GitHub entregues (o NOS fica em review, não vai a `done` aqui)
 
-Só se o **push + PR do passo 6 deram certo** — o trabalho está entregue, então feche o que
-ele resolve. Descubra os identificadores no registro: `docs/tickets/<stem>.md` (o `task_id` do
-NOS / `#N` do GitHub que o `/to-tickets` gravou) e/ou o `issue:` do frontmatter da spec. Para
-cada um, **cheque o estado primeiro e só complete o que ainda está aberto** (idempotente —
-nunca re-feche o que já está completo):
+Só se o **push + PR do passo 6 deram certo** — o trabalho foi entregue **ao review**, não ao
+cliente ainda. Descubra os identificadores no registro: `docs/tickets/<stem>.md` (o `task_id` do
+NOS / `#N` do GitHub que o `/to-tickets` gravou) e/ou o `issue:` do frontmatter da spec.
 
-- **GitHub** (se `gh` disponível) → `gh issue view <n> --json state -q .state`. `OPEN` →
-  `gh issue close <n> --comment "Entregue no PR <url>"`. Já `CLOSED` → pule.
-- **NOS** → `nos_get_task` pra ver o estado; se ainda não entregue, `nos_move_task` pro estado
-  de entrega (`done`/`delivered`) e `nos_record_delivery` (`title`, `pr_url`, `task_id`). Já
-  entregue → pule. As tools `nos_*` rodam em qualquer cliente (inclusive Cowork).
+- **GitHub** (se `gh` disponível) → **cheque o estado primeiro e só feche o que ainda está
+  aberto** (idempotente — nunca re-feche o que já está completo): `gh issue view <n> --json
+  state -q .state`. `OPEN` → `gh issue close <n> --comment "Entregue no PR <url>"`. Já
+  `CLOSED` → pule.
+- **NOS** → **nada a fazer aqui.** `nos_attach_pr` (§6) já moveu a task pra `code_review`; o
+  `/ship` **não** move mais incondicionalmente pra `done`/`delivered` nem chama
+  `nos_record_delivery` neste passo — isso passou a depender do **veredito do review**
+  (`nos_set_review(approved, advance)`, tratado pelo loop de review, fora deste comando). Uma
+  task sem PR vinculado (branch feita à mão, sem `task_id`) segue como estava.
 
 Branch feita à mão, sem issue/task vinculada → pule este passo. **Nunca invente** uma issue
 pra fechar.
@@ -164,4 +171,4 @@ precisar de follow-up.
 
 ## 9. Handoff
 
-Imprima, nesta ordem: os SHAs dos commits + títulos, a branch com push feito, as **issues/tasks fechadas** (GitHub `#N` / NOS `task_id`, ou "nenhuma vinculada"), e se o **worktree foi removido** (`<path>`, de volta no repo principal com a branch preservada) ou **mantido** (com o porquê). **Por último, em sua própria linha: a URL do PR** — a saída clicável do `gh pr create` — ou o motivo do skip se o passo do PR foi pulado. O link do PR é a última coisa que o usuário vê.
+Imprima, nesta ordem: os SHAs dos commits + títulos, a branch com push feito, a **issue do GitHub fechada** (`#N`, ou "nenhuma vinculada") e a **task do NOS ligada ao PR e em review** (`task_id`/`key`, `review_state=pending`, ou "nenhuma vinculada" — lembrando que ela só chega a `done` após o veredito do review), e se o **worktree foi removido** (`<path>`, de volta no repo principal com a branch preservada) ou **mantido** (com o porquê). **Por último, em sua própria linha: a URL do PR** — a saída clicável do `gh pr create` — ou o motivo do skip se o passo do PR foi pulado. O link do PR é a última coisa que o usuário vê.
