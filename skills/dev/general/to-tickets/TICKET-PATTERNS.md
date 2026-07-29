@@ -38,6 +38,24 @@ Se nem os lotes ficam verdes sozinhos, mantenha a sequência mas deixe-os dividi
 de integração** que **todos** bloqueiam um ticket final de *integrar-e-verificar* — verde só
 é prometido lá.
 
+## Granularidade — poucas tarefas, bem separadas
+
+Prefira **poucas** fatias que entregam comportamento a muitas tarefas atômicas. Sub-passos
+técnicos de uma mesma fatia (implementar X, documentar Y, cobrir com teste Z) **não** viram
+tickets separados — viram **itens de checklist** dentro da tarefa. Regra prática: se dois
+"tickets" sempre seriam feitos juntos, no mesmo PR, são **um** ticket com dois itens de
+checklist. Fatie por **comportamento demonstrável**, não por camada nem por arquivo.
+
+## Título — humano, orientado a resultado
+
+O título descreve **o que passa a ser verdade** pela ótica de quem usa — não um código de
+workstream nem o nome do repo. Nada de prefixos tipo `WS1-A · [repo] …`. Repo, workstream e
+dependências vão pro **Contexto** da descrição.
+
+- ✅ "Veredito de review vira estado do ticket"
+- ✅ "Anexar o PR ao ticket e entrar em review"
+- ❌ "WS1-C · [noclaf-cli] Tool nos_attach_pr + mover para Em Review"
+
 ## Anti-obsolescência
 
 Em qualquer forma, evite **caminhos de arquivo e snippets de código** — envelhecem rápido.
@@ -65,17 +83,37 @@ do usuário — não uma lista de implementação camada por camada.
 …
 ```
 
-## Template — issue (GitHub / NOS)
+## Template — tarefa no NOS (descrição curta + checklists nativos)
+
+No NOS a descrição é **curta e escaneável**; o detalhamento e o DoD viram **checklists
+nativos** (via `nos_add_checklist`), não markdown enfiado no corpo. A descrição é markdown GFM
+(renderiza). Corpo:
+
+    <uma linha: o comportamento que a tarefa entrega, pela ótica do usuário>.
+
+    ### Contexto
+    **Repo:** `<repo>` · **Depende de:** <tickets bloqueadores, ou "—">
+    <opcional: 1 linha de origem — spec/RFC, o que já existe>
+
+Depois de criar a task (`nos_create_task`), popule **checklists nativos** com `nos_add_checklist`
+(uma chamada por checklist):
+
+- **Implementação** — os passos técnicos verificáveis da fatia (o que seria sub-ticket vira item aqui).
+- **Definition of Done** — os critérios de aceitação, como condições checáveis.
+
+`nos_add_checklist` indisponível (MCP antigo) → caia pra `- [ ]` markdown na descrição, sob um
+`### Definition of Done`.
+
+## Template — issue no GitHub (markdown)
+
+O GitHub não tem checklist nativo por API — aqui o DoD é `- [ ]` no corpo:
 
 ```markdown
-## Pai
-Referência à issue-pai no tracker (se a origem foi uma issue existente; senão omita).
-
 ## O que construir
 O comportamento ponta-a-ponta que este ticket faz funcionar, pela ótica do usuário — não
 camada por camada.
 
-## Critérios de aceitação
+## Definition of Done
 - [ ] Critério 1
 - [ ] Critério 2
 
