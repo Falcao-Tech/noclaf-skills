@@ -33,6 +33,12 @@ Cada arquivo tem frontmatter com `title`, `description`, `applies-to` e `extends
 - [ios-rules](mobile/ios-rules.md) — iOS/Swift: SwiftUI + async/await, value types, sem force-unwrap, `@MainActor`.
 - [android-rules](mobile/android-rules.md) — Android/Kotlin: Compose + Coroutines/Flow, null-safety, `StateFlow`, Hilt.
 
+## Critérios de review (`## Critérios de review`)
+
+Nem toda regra é **verificável num diff**: `arquivo ≤300 linhas` e `sem any na borda` são checáveis; `componentize sempre` e `YAGNI` são **guia de implementação** (orientam, mas o gate não reprova mecanicamente). Pra separar os dois, cada arquivo de rules pode ter uma seção canônica **`## Critérios de review`** — um checklist `- [ ]` com o subconjunto **verificável**, escrito como afirmação checável ("Nenhum arquivo passa de 300 linhas"). O resto do arquivo segue sendo guia.
+
+Essa seção é a **âncora legível por máquina**: o writer da harness concatena todas as `## Critérios de review` (geral + área + stack em jogo) num `docs/_review.md` determinístico, que o `code-reviewer` e o review automatizado (Visor) consomem como rubrica. Sem a seção, o arquivo só contribui guia — nada quebra.
+
 ## Skills externas (`skills:`)
 
 Um conjunto pode apontar uma skill de terceiro (ex.: `vercel-labs/agent-skills/...`, `mattpocock/skills/...`) que reforça o mesmo padrão — instalável via `npx skills add <owner/repo>`. Hoje é **referência** (documenta o "porquê"); pra ela ser de fato instalada no worker, declare-a também como uma **dependency** (`dependencies/<slug>.md` com `skills:`), que é o que a CLI oferece instalar no `sync`.
