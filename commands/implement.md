@@ -79,6 +79,9 @@ elif [ -f yarn.lock ];         then yarn --silent
 elif [ -f poetry.lock ];       then poetry install -q
 elif [ -f Cargo.toml ];        then cargo fetch -q
 fi
+# Repo-map: índice `arquivo → símbolos` que os agentes grepam pra localizar código sem abrir
+# arquivo. É gerado (nunca versionado), então todo worktree precisa do seu. Best-effort.
+noclaf map >/dev/null 2>&1 || true
 # IDE: registra/abre o worktree no editor escolhido (campo `ide` do noclaf.json de origem).
 # Best-effort — `{ …; } || true` neutraliza o `set -e`, NUNCA derruba o implement. Imprime
 # diagnóstico (ide detectado + se o binário foi achado) pra não falhar em silêncio.

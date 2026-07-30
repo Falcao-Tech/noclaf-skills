@@ -14,6 +14,8 @@ repositório e devolve um **resumo estruturado curto** — conclusões, não dum
 
 ## Regras
 - Só `Read`/`Grep`/`Glob`. Nunca escreva, edite, nem rode comando que mude estado.
+- **Comece pelo `docs/_map.md`** (índice `arquivo → símbolos exportados`): ele responde "onde
+  vive o quê" sem abrir arquivo. Só abra um arquivo quando o map não bastar.
 - Fique **dentro do recorte pedido**. Não varra o repo inteiro nem responda o que não foi perguntado.
 - Devolva **fatos + caminhos**, não o conteúdo: `caminho — o que é` em uma linha, não colar o arquivo.
 - Não existe? Diga "não encontrado". Nunca invente.
