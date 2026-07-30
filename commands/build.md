@@ -1,8 +1,9 @@
 ---
-description: Loop de build autônomo — do ticket ao done, em waves paralelas. Calcula o frontier do DAG (`noclaf wave`) e roda até `max_parallelism` tickets ao mesmo tempo, cada um no seu worktree: code-executor → code-reviewer → gate (até 15 iterações por ticket), lint/build/testes, commit → push → PR por ticket, e então o pr-reviewer (2ª opinião pós-push) até approved ou escalar. A wave seguinte parte da base já integrada. Default **--auto** (autônomo); **--review** adiciona um gate humano antes do push/PR; **--parallel N** sobrepõe o teto.
+description: Loop de build autônomo — do ticket ao done, em waves paralelas. Calcula o frontier do DAG (`noclaf wave`) e roda até `max_parallelism` tickets ao mesmo tempo, cada um no seu worktree: repo-scout (brief) → code-executor → code-reviewer → gate (até 6 iterações por ticket), lint/build/testes, commit → push → PR por ticket, e então o pr-reviewer (2ª opinião pós-push) até approved ou escalar. A wave seguinte parte da base já integrada. Default **--auto** (autônomo); **--review** adiciona um gate humano antes do push/PR; **--parallel N** sobrepõe o teto.
 argument-hint: <spec/bug/tickets ref> [--review] [--parallel N]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, Skill
 model: sonnet
+effort: medium
 ---
 
 Você é o **orquestrador** do loop de build: **$ARGUMENTS**.
@@ -61,22 +62,40 @@ de fora (`blocked` = dependência pendente, `conflict` = arquivo disputado, `cap
 
 ## 3. Rodada da wave (agentes concorrentes)
 
-Lance **um `code-executor` por ticket da wave, em paralelo** (todos os `Agent` numa só mensagem),
-cada um no **seu** worktree. Para **cada** ticket, mantenha um contador de iterações próprio e
-rode o mini-loop:
+O bloco de worktree do `/implement` (§1) já gerou o `docs/_map.md` de cada worktree — o índice
+`arquivo → símbolos` que os agentes grepam pra localizar código. Depois de muitas mudanças num
+ticket, regere o dele: `noclaf map --project <worktree>`.
 
+Lance **um `repo-scout` por ticket da wave, em paralelo** (todos os `Agent` numa só mensagem) e
+depois **um `code-executor` por ticket**, cada um no **seu** worktree. Para **cada** ticket,
+mantenha um contador de iterações próprio e rode o mini-loop:
+
+0. **repo-scout** (Haiku, barato) — destila o **recorte** do ticket num **brief**: onde vive o
+   quê, convenções da área, call-sites. Só na 1ª iteração do ticket; nas seguintes o brief já
+   está no contexto do executor. Ele grepa o `docs/_map.md`, não varre o repo.
 1. **code-executor** (subagente) — implementa **só este ticket** no seu worktree seguindo o
-   harness (`docs/_rules` + `docs/_patterns` + `AGENTS.md`); deixa **staged**; devolve o resumo.
+   harness (`docs/_rules` + `docs/_patterns` + `AGENTS.md`). Recebe o **brief do repo-scout** e
+   **confia nele**: abre só os arquivos que vai editar (ou ler pra editar), e usa o
+   `docs/_map.md` pra localizar o resto — **não relê o repo pra "entender"**. Deixa **staged**;
+   devolve o resumo.
 2. **code-reviewer** (subagente, contexto limpo) — valida o diff contra o harness + os
    **critérios de aceitação** do ticket. Devolve `approved` ou `changes_requested` + motivos.
 3. **Gate** (veredito canônico do reviewer — o token `approved`/`changes_requested`):
    - `approved` → registre o **veredito estruturado** do ticket `{ verdict: approved,
      iterations: <contador> }` (é o gate interno/pré-push — guarde o contador; o §6 reusa este
      mesmo contador se o `pr-reviewer` pedir uma nova passada) e siga pro passo 4 **desse** ticket.
-   - `changes_requested` **e** iterações < **15** (teto explícito) → volte ao (1) passando os
+   - `changes_requested` **e** iterações < **6** (teto explícito) → volte ao (1) passando os
      **Motivos** como instrução; incremente o contador.
-   - iterações = **15** (teto) → **ESCALE aquele ticket**: pare o mini-loop dele **sem push**,
-     registre `{ verdict: changes_requested, iterations: 15 }` e reporte o estado. Não insista.
+   - **Mesma violação 2× seguidas** (o reviewer repete um motivo que a passada anterior já
+     apontou) → **ESCALE na hora**, mesmo com iterações sobrando: o loop não está convergindo e
+     mais uma passada só queima contexto.
+   - iterações = **6** (teto) → **ESCALE aquele ticket**: pare o mini-loop dele **sem push**,
+     registre `{ verdict: changes_requested, iterations: 6 }` e reporte o estado. Não insista.
+
+**Contrato de retorno dos subagentes** — o que você absorve de cada um é **só**
+`{ ticket, veredito, arquivos_tocados, motivos, iteracoes }`. Nada de diffs, nada de conteúdo de
+arquivo, nada de output completo. Se precisar de um detalhe depois, releia sob demanda **aquele**
+ponto — nunca reincorpore o output inteiro.
 
 **A falha de um não trava os outros.** Ticket que escalou sai da wave e vira item de handoff; os
 demais da wave seguem até o fim normalmente. Um ticket escalado **nunca** é integrado (passo 7),
@@ -86,7 +105,7 @@ Os **hooks** já travam o mecânico (arquivo <300, função <30, comentário ≤
 iteração revisando isso; o reviewer cuida do subjetivo (rules, patterns, correção).
 
 **Monitoramento:** mantenha uma linha de estado por ticket — `rodando` / `aprovado` /
-`changes (n/15)` / `escalado` / `PR aberto` / `entregue` — e atualize a cada transição. É o que
+`changes (n/6)` / `escalado` / `PR aberto` / `entregue` — e atualize a cada transição. É o que
 vira o handoff (§9).
 
 ## 4. Gate de segurança (por ticket, antes de fechar)
@@ -134,13 +153,13 @@ Reaja ao veredito **por ticket vinculado ao PR** (`task_id` do registro de ticke
   <motivos do pr-reviewer>)` — mantém a task em `code_review` e posta os motivos como
   comentário. **Realimente o code-executor** daquele ticket com os motivos como instrução: uma
   nova passada do mini-loop do **§3** (code-executor → code-reviewer → gate) **naquele ticket**,
-  **reusando o mesmo contador e o mesmo teto de 15 iterações** dele (não reinicia aqui). Depois
+  **reusando o mesmo contador e o mesmo teto de 6 iterações** dele (não reinicia aqui). Depois
   de o gate interno aprovar de novo, dê **novo push** (via `/ship` de novo, ou um push simples
   pra mesma branch/PR) e **re-rode o pr-reviewer** sobre o diff atualizado. Repita até
   `approved` ou até o teto. Os outros tickets da wave **não esperam** por este.
-  - **Teto de 15 estourado** → **ESCALE**: pare sem insistir, reporte ao humano o estado
-    (ticket, PR, motivos pendentes do `pr-reviewer`, iterações consumidas) — a task **fica em
-    `code_review`**, sem `nos_set_review(advance)` e sem entrega.
+  - **Teto de 6 estourado (ou mesma violação 2×)** → **ESCALE**: pare sem insistir, reporte ao
+    humano o estado (ticket, PR, motivos pendentes do `pr-reviewer`, iterações consumidas) — a
+    task **fica em `code_review`**, sem `nos_set_review(advance)` e sem entrega.
 - **Degradação** — se o `pr-reviewer` não puder rodar (subagente indisponível, diff
   inacessível, etc.), **não trave o loop**: caia no veredito do gate interno (`code-reviewer`,
   §3) daquele ticket como substituto — se ele aprovou, chame `nos_set_review(task_id, verdict:
@@ -188,7 +207,8 @@ na degradação). Aqui só resta:
 Imprima, nesta ordem:
 
 1. **Tabela por ticket** — id, estado final (`entregue` / `escalado` / `em changes_requested`),
-   veredito do gate interno (§3) e do `pr-reviewer` (§6), iterações consumidas, e em **qual wave**
+   veredito do gate interno (§3) e do `pr-reviewer` (§6), iterações consumidas, **tokens
+   gastos** (some o `tokens` de cada `nos_exec_status`/run-event do ticket) e em **qual wave**
    ele rodou. Marque `done` via degradação (§6) quando for o caso.
 2. **Tickets não escalonados** e o motivo (`blocked` / `conflict` / `cap`), do último `noclaf wave`.
 3. Estado de **lint/build/testes** — por ticket e na branch de integração.
