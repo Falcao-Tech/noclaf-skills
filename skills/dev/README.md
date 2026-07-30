@@ -17,9 +17,16 @@ Pra escrever, revisar e projetar código. Agrupadas por **stack** — a pasta é
 
 ## front-end
 
-- [animation-vocabulary](front-end/animation-vocabulary/SKILL.md) — glossário reverso: descrição vaga → termo exato de motion.
-- [emil-design-eng](front-end/emil-design-eng/SKILL.md) — filosofia de polish de UI e craft (Emil Kowalski).
-- [review-animations](front-end/review-animations/SKILL.md) — revisa código de animation contra uma régua alta de craft.
+- [animation-vocabulary](front-end/general/animation-vocabulary/SKILL.md) — glossário reverso: descrição vaga → termo exato de motion.
+- [emil-design-eng](front-end/general/emil-design-eng/SKILL.md) — filosofia de polish de UI e craft (Emil Kowalski).
+- [review-animations](front-end/general/review-animations/SKILL.md) — revisa código de animation contra uma régua alta de craft.
+- [better-interface](front-end/general/better-interface/SKILL.md): Revisão de interface multidisciplinar, invocada pelo usuário, que coordena todas as skills abaixo.
+- [better-ui](front-end/general/better-ui/SKILL.md): Detalhes de design engineering que deixam interfaces polidas: border radius, sombras, animações e microinterações.
+- [better-typography](front-end/general/better-typography/SKILL.md): Tipografia web, da escolha das fontes ao espaçamento, quebra de linha e acessibilidade.
+- [better-colors](front-end/general/better-colors/SKILL.md): Espaço de cor OKLCH: geração de paletas, contraste, tratamento de gamut e temas.
+- [better-accessibility](front-end/general/better-accessibility/SKILL.md): Estados de foco, suporte a teclado, ARIA, formulários, leitores de tela, áreas de toque e movimento.
+- [better-layout](front-end/general/better-layout/SKILL.md): Estrutura de layout, agrupamento, alinhamento, ordem de leitura, divulgação progressiva e breakpoints adaptativos.
+- [better-writing](front-end/general/better-writing/SKILL.md): UX writing e textos de interface, de rótulos de botões a erros, configurações e estados vazios.
 
 ## back-end
 
