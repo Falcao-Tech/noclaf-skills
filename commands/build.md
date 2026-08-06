@@ -1,5 +1,4 @@
 ---
-id: 28
 description: Loop de build autônomo — do ticket ao done, em waves paralelas. Calcula o frontier do DAG (`noclaf wave`) e roda até `max_parallelism` tickets ao mesmo tempo, cada um no seu worktree: repo-scout (brief) → code-executor → code-reviewer → gate (até 6 iterações por ticket), lint/build/testes, commit → push → PR por ticket, e então o pr-reviewer (2ª opinião pós-push) até approved ou escalar. A wave seguinte parte da base já integrada. Default **--auto** (autônomo); **--review** adiciona um gate humano antes do push/PR; **--parallel N** sobrepõe o teto.
 argument-hint: <spec/bug/tickets ref> [--review] [--parallel N]
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, Skill

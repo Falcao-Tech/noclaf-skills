@@ -1,5 +1,4 @@
 ---
-id: 35
 name: better-writing
 description: >-
   UX writing and interface copy, from voice and button labels to error messages and empty states. Use when writing or reviewing any user-facing text: button and link labels, form errors, placeholders, settings labels, onboarding flows, notifications, or empty states. Triggers on UX writing, microcopy, interface copy, product copy, copywriting, button labels, link text, error messages, empty states, placeholder text, settings labels, capitalization, title case, sentence case, voice and tone.

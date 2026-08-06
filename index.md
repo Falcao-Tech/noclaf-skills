@@ -32,14 +32,6 @@ Libs externas que alguns commands precisam — **não** sincronizadas. Índice: 
 - [improve](dependencies/improve.md) — validação de spec usada por [init-sdd](skills/dev/general/init-sdd/SKILL.md).
 - [gh](dependencies/gh.md) — CLI do GitHub, usada por [to-doc](skills/dev/general/to-doc/SKILL.md) (spec) + [to-tickets](skills/dev/general/to-tickets/SKILL.md) pra publicar issues.
 
-## Boilerplates
-
-Ponteiros leves (`BOILERPLATE.md`) pra repos-template que o `noclaf init --apply` clona em
-projeto novo — **não** sincronizados pro `~/.claude`; o CLI lê do cache. Taxonomia por caminho,
-igual às skills: `boilerplates/<role>/<área>/<stack>/<nome>/`.
-
-Pra registrar um repo novo, use a skill [new-boilerplate](skills/dev/general/new-boilerplate/SKILL.md).
-
 ## Hooks
 
 Scripts + gatilho que o cliente roda em eventos do ciclo de vida — provisionados e registrados no `settings.json` pelo CLI. Índice: [hooks](hooks/README.md).
