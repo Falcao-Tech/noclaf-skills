@@ -1,4 +1,5 @@
 ---
+id: 26
 name: code-reviewer
 description: Reviewer de qualidade somente-leitura — valida um diff contra o harness do projeto (docs/_rules/noclaf.md + docs/_patterns.md + AGENTS.md) e os critérios do ticket. Devolve o veredito canônico `approved`/`changes_requested` + motivos acionáveis. NÃO corrige. É o gate subjetivo do loop de build; o mecânico (tamanho de arquivo/função/comentário) já é dos hooks.
 tools: Read, Grep, Glob, Bash

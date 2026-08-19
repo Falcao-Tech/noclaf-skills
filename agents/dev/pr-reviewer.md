@@ -1,4 +1,5 @@
 ---
+id: 27
 name: pr-reviewer
 description: Reviewer independente de PR — contexto limpo, valida o diff da branch contra o que JÁ EXISTIA no código + o harness + os critérios do ticket, rodando os guards mecânicos como backstop. Read-only; devolve o veredito canônico approved/changes_requested + motivos. NÃO corrige, NÃO escreve no NOS (o loop consome o veredito e chama nos_set_review). É a 2ª opinião pós-push, complementar ao code-reviewer (pré-push).
 tools: Read, Grep, Glob, Bash

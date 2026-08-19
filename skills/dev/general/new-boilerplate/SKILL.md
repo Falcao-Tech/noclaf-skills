@@ -33,7 +33,7 @@ gh repo view <org>/<repo> --json name,description,defaultBranchRef,primaryLangua
 - `title` — a partir do `name` + linguagem, em prosa (`api-starter` + TypeScript → "API Starter (TypeScript)"). Não repita o nome cru.
 - `description` — a do GitHub. Vazia ou genérica demais → leia o README e escreva **uma linha** dizendo o que o template entrega (stack + o que já vem ligado).
 - `ref` — o `/tree/<branch>` da URL se havia; senão **omita o campo** (o clone usa o default do repo). Só fixe `ref` quando o usuário pedir um branch específico.
-- `isPrivate: true` → **pare e avise**: o `--apply` roda com `GIT_TERMINAL_PROMPT=0`, então repo privado falha na hora do clone. Peça pra tornar público ou escolher outro.
+- `isPrivate: true` → **siga normalmente**. Boilerplate interno é o caso comum: o time todo tem acesso à org, e o `git` do worker já carrega credencial (`gh auth login` instala o helper). Só registre no manifesto que ele exige acesso à org, pra quem for de fora entender o erro se topar com ele.
 
 Sem `gh` (veja [gh](../../../../dependencies/gh.md)) ou repo inacessível: pergunte título e
 descrição junto da taxonomia, numa pergunta só.
@@ -95,9 +95,13 @@ GIT_TERMINAL_PROMPT=0 git ls-remote <repo> HEAD >/dev/null && echo "clonável"
 noclaf init --describe | jq '.boilerplates[] | select(.id == "<nome>")'
 ```
 
-O primeiro prova que o clone do `--apply` vai funcionar sem pedir credencial. O segundo prova
-que o manifesto entra no catálogo — **saída vazia é o sintoma clássico de `repo` fora da
-allowlist** (volte ao passo 1).
+O primeiro prova que o clone do `--apply` roda sem pedir credencial **na sua máquina**. Num repo
+privado é exatamente isso que você quer medir: o worker também tem credencial da org. Não isole
+o `HOME` pra "testar limpo" — aí o teste falha sempre e mede uma máquina que não existe.
+
+O segundo prova que o manifesto entra no catálogo — **saída vazia é o sintoma clássico de `repo`
+fora da allowlist** (volte ao passo 1). Cuidado: o catálogo **não** valida acesso, só o esquema
+da URL. Um repo privado que ninguém alcança entra em `boilerplates[]` igual e só quebra no clone.
 
 O `--describe` lê o **cache** (`~/.noclaf/skills`), que vem do `main` publicado. Antes do push,
 valide apontando pro checkout local:
