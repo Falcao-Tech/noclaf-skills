@@ -95,6 +95,8 @@ Mostre ao usuário e **espere aprovação explícita**:
 - **Push** com upstream: `git push -u origin <branch>`. Sem remote `origin`? → **PARE** com orientação; não fabrique um remote.
 - **Abra o PR** para `<base>` com `gh pr create --base <base> --head <branch>`:
   - **Título** = o título do commit de código (caia de volta para o título de docs se não houver commit de código).
+  - **Assignee** = `--assignee @me` — quem abre o PR é o responsável.
+  - **Label** = `--label <um>`, escolhido pelo tipo do commit de código: `fix:` → `bug`; PR só de `docs:` → `documentation`; qualquer outro (`feat`/`refactor`/…) → `enhancement`. **Só os labels padrão do GitHub** — nunca `ready-for-agent` nem labels custom, a menos que o usuário peça. Se o `gh` recusar porque o label não existe no repo, re-rode sem `--label` e avise.
   - **Corpo** = o **template estruturado** abaixo (seções fixas, nesta ordem). Preencha cada
     uma a partir da fonte (spec/bug/ticket); sem conteúdo pra uma seção, escreva `n/a` —
     **nunca omita o cabeçalho**: o formato fixo é o que o review automatizado (ex.: Visor)
