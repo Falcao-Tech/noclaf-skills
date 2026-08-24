@@ -45,7 +45,10 @@ qualquer caso: **lacuna genuína NÃO se inventa** — vira **Questão em aberto
    **PERGUNTE se quer publicar como issue**. Só publique se confirmar:
    - **NOS** — projeto da sessão (`nos_set_project` se preciso) + `nos_create_task` (título =
      `title`, corpo = Problema + Solução + id/link da spec).
-   - **GitHub** — `gh issue create` com o corpo da spec + label `ready-for-agent` (dependência `gh`).
+   - **GitHub** — `gh issue create` com o corpo da spec, `--assignee @me`, `--type Feature`
+     (`gh api orgs/<org>/issue-types` lista os válidos; 404 / repo pessoal → omita `--type`) e
+     label padrão `enhancement` (dependência `gh`). Ela vira a
+     issue-pai dos tickets do `to-tickets`.
    - Grave a ref (URL/número) no frontmatter `issue:`. **Draft nunca é publicado.**
 7. **Feche.** Imprima caminho, id, status e (se publicou) a ref da issue. **PARE.** Próximo passo:
    - `draft` → refine em plan mode, **limpe as Questões em aberto** (cada resposta → Registro de

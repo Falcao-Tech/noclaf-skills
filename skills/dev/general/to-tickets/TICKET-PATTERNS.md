@@ -56,6 +56,11 @@ dependências vão pro **Contexto** da descrição.
 - ✅ "Anexar o PR ao ticket e entrar em review"
 - ❌ "WS1-C · [noclaf-cli] Tool nos_attach_pr + mover para Em Review"
 
+**Exceção — só no GitHub:** a issue leva o **id da spec** como prefixo (`0011 · Veredito de
+review vira estado do ticket`). Não é código de workstream nem nome de repo: é a âncora que
+agrupa a lista de issues por spec e casa com o `<id>-<slug>` da branch. No **NOS** e no
+registro local o título continua **sem** prefixo algum.
+
 ## Anti-obsolescência
 
 Em qualquer forma, evite **caminhos de arquivo e snippets de código** — envelhecem rápido.
@@ -106,7 +111,8 @@ Depois de criar a task (`nos_create_task`), popule **checklists nativos** com `n
 
 ## Template — issue no GitHub (markdown)
 
-O GitHub não tem checklist nativo por API — aqui o DoD é `- [ ]` no corpo:
+O GitHub não tem checklist nativo por API — aqui o DoD é `- [ ]` no corpo. Bloqueadores **não**
+entram no corpo: são campo nativo (`--blocked-by`, seção *Relationships*).
 
 ```markdown
 ## O que construir
@@ -116,7 +122,4 @@ camada por camada.
 ## Definition of Done
 - [ ] Critério 1
 - [ ] Critério 2
-
-## Bloqueado por
-- Referência a cada ticket bloqueador, ou "Nenhum — pode começar já".
 ```
