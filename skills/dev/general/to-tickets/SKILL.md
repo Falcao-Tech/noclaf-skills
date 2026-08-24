@@ -65,12 +65,41 @@ der e registre o que faltou.
   (passos técnicos) e uma **Definition of Done** (critérios). Ver os templates em TICKET-PATTERNS.
   `nos_add_checklist` indisponível → DoD como `- [ ]` na descrição. As tools `nos_*` são MCP e
   **não dependem de shell**, então rodam no Cowork — este é o canal que nunca falta.
-- **GitHub (quando o `gh` estiver disponível)** → uma issue por ticket em ordem de dependência
-  (`gh issue create …`). Onde a spec já virou issue-pai (`issue:` no frontmatter), crie os
-  tickets como **sub-issues** dela; senão "Bloqueado por #N" no corpo (o GitHub não tem campo
-  nativo de "blocked by"). Aplique o label `ready-for-agent`. **Não** feche/modifique a
-  issue-pai. `gh` ausente/não-autenticado (ex.: Cowork sem shell) → **pule o GitHub sem
-  travar** e siga com NOS + local.
+- **GitHub (quando o `gh` estiver disponível)** → uma issue por ticket, **em ordem de
+  dependência** (`--parent`/`--blocked-by` só aceitam issues que já existem). Preencha **todos
+  os campos na própria criação** — issue com campo vazio, ou com dependência só em prosa no
+  corpo, é ticket pela metade:
+
+  ```bash
+  gh issue create --title "<id-da-spec> · <título humano>" --body-file <corpo.md> \
+    --assignee @me \
+    --type "<Task|Bug|Feature>" \
+    --label "<enhancement|bug|documentation>" \
+    --parent <n-da-issue-pai> \
+    --blocked-by <n1,n2> \
+    --milestone "<ciclo aberto, se existir>"
+  ```
+
+  - **Título** — começa com o **id da spec**, depois `· ` e o título humano:
+    `0011 · Descobrir boilerplates no catálogo`. É o que deixa a lista de issues agrupada por
+    spec e casa com o `<id>-<slug>` da branch. Sem spec de origem (descrição livre) → só o
+    título humano.
+  - **Assignee** — `@me` sempre; quem fatia é o dono até reatribuírem.
+  - **Type** — campo nativo, definido na **org**. Liste os válidos com
+    `gh api orgs/<org>/issue-types -q '.[].name'` (404 / repo pessoal → omita `--type`). Mapa:
+    comportamento novo → `Feature`; correção → `Bug`; chore/refactor/infra → `Task`.
+  - **Relationships** — as arestas do DAG são **campos nativos**, não texto: `--blocked-by <n>`
+    por bloqueador, e `--parent <n>` quando a spec já virou issue-pai (`issue:` no frontmatter).
+    O corpo **não** repete a lista de bloqueadores. Só se o `gh` recusar as flags (versão
+    antiga) caia pro `Bloqueado por #N` no corpo — e registre a degradação no handoff.
+  - **Label** — só os padrão do GitHub (`enhancement` / `bug` / `documentation`), casando com o
+    Type. Nunca `ready-for-agent` nem labels custom, a menos que o usuário peça.
+  - **Milestone** — só se já existir (`gh api repos/<org>/<repo>/milestones -q '.[].title'`); o
+    `gh issue create` **falha** com nome inexistente. Nenhuma aberta → omita a flag.
+  - **Não** feche/modifique a issue-pai. `gh` ausente/não-autenticado (ex.: Cowork sem shell) →
+    **pule o GitHub sem travar** e siga com NOS + local.
+  - A seção **Development** (branch/PR) fica vazia aqui de propósito — quem a preenche é o
+    `/implement`, com `gh issue develop`, no momento em que a branch nasce.
 - **Local (registro)** → escreva `docs/tickets/<stem-da-spec | slug>.md` (crie a pasta se
   faltar), todos os tickets em ordem de dependência, cada um com "Bloqueado por" **e os
   identificadores criados** (`task_id` do NOS, `#N` do GitHub) — é o que o `/implement` e o
