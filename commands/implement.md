@@ -116,6 +116,23 @@ echo "ide: $ide_msg"
 Regra: **nunca** reutilize uma branch não relacionada em que você por acaso está — o bloco
 sempre parte da default quando a branch não existe. Faça **todo o resto dentro de `$wt`**. Depois do bloco:
 
+- **Linke a branch à issue (GitHub, se houver `#N`):** preenche a seção *Development* da issue —
+  é o que faz o GitHub mostrar branch e PR no ticket. Best-effort, **nunca** derruba o implement:
+
+  ```bash
+  issue="__ISSUE__"; branch="__BRANCH__"   # issue: nº em docs/tickets/<stem>.md ou `issue:` da spec
+  def=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@'); def=${def:-main}
+  if [ -n "$issue" ] && gh issue develop "$issue" --name "$branch" --base "$def" >/dev/null 2>&1; then
+    echo "development: #$issue → $branch"
+  else
+    echo "development: pulado (sem issue vinculada, sem gh, ou branch remota já linkada)"
+  fi
+  ```
+
+  Ele cria a branch no remote **no tip atual de `$def` no servidor** — que pode ter andado
+  depois que o worktree saiu do `$def` local. Quando isso acontece, o `git push -u` do `/ship`
+  é rejeitado por *non-fast-forward*: `git fetch origin "$branch" && git rebase "origin/$branch"`
+  e repita o push. Branch remota já existente / `gh` ausente → falha calado, siga.
 - **Traga a nota pra dentro (SPEC/BUG):** copie `docs/specs|bugs/<file>.md` pro worktree e
   **delete a original** da working tree de origem se ainda não estava commitada; se já
   estava, sinalize no handoff. (TICKETS: sem doc a mover.)
