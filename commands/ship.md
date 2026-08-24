@@ -130,6 +130,35 @@ Mostre ao usuário e **espere aprovação explícita**:
   review (interno + `pr-reviewer` independente, fora deste comando). Sem `task_id` vinculado →
   pule, nada a anexar.
 
+## 6b. Verifique que o conteúdo REALMENTE saiu — gate duro, antes de qualquer coisa destrutiva
+
+Abrir PR **não** prova que o trabalho foi publicado: um `git add` por caminhos explícitos pode
+ter deixado arquivo novo de fora, o push pode ter subido um HEAD velho, e o PR pode nascer com
+diff vazio. Some isso ao `worktree remove --force` do §8 e o trabalho **desaparece** com o PR
+aberto. Rode **este bloco** e só siga se ele imprimir `✅`:
+
+```bash
+set -uo pipefail
+base="__BASE__"; branch="__BRANCH__"; fail=0
+# 1. Nada relevante ficou fora do commit (arquivos ignorados não aparecem aqui).
+dirty=$(git status --porcelain)
+[ -n "$dirty" ] && { echo "❌ mudança não commitada:"; echo "$dirty"; fail=1; }
+# 2. O remote tem exatamente o que o local tem.
+git fetch -q origin "$branch" 2>/dev/null || true
+remote=$(git rev-parse "origin/$branch" 2>/dev/null || echo "")
+[ "$(git rev-parse HEAD)" = "$remote" ] || { echo "❌ origin/$branch não bate com HEAD (push não subiu tudo)"; fail=1; }
+# 3. A branch carrega commits em relação à base do PR.
+[ "$(git rev-list --count "origin/$base..HEAD" 2>/dev/null || echo 0)" -gt 0 ] || { echo "❌ nenhum commit em relação a $base"; fail=1; }
+# 4. O PR tem diff de verdade (pulado se não houver gh).
+files=$(gh pr view "$branch" --json files -q '.files|length' 2>/dev/null || echo skip)
+[ "$files" = "0" ] && { echo "❌ PR aberto com 0 arquivos"; fail=1; }
+[ "$fail" = 0 ] && echo "✅ conteúdo publicado ($files arquivos no PR)" || { echo "PARE: worktree e branch PRESERVADOS"; exit 1; }
+```
+
+Vermelho → **PARE**: não remova o worktree, não feche issue, não marque nada como entregue.
+Reporte o que falhou (o `git status` do bloco já diz quais arquivos ficaram de fora) e conserte
+— normalmente é dar stage no que faltou, commitar e repetir o §6.
+
 ## 7. Feche as issues do GitHub entregues (o NOS fica em review, não vai a `done` aqui)
 
 Só se o **push + PR do passo 6 deram certo** — o trabalho foi entregue **ao review**, não ao
@@ -151,9 +180,11 @@ pra fechar.
 
 ## 8. Remova o worktree (só se o push deu certo)
 
-**Só se o push do passo 6 deu certo.** Se o push falhou ou foi pulado (sem remote),
-**mantenha** o worktree — nunca remova trabalho sem push. Se removeu, rode **este bloco de
-uma vez** (determinístico — não precisa `git worktree list` pra "descobrir" o path):
+**Só se o gate do §6b imprimiu `✅`.** Push falhou, foi pulado (sem remote), ou o gate acusou
+qualquer coisa → **mantenha** o worktree; nunca remova trabalho que não está comprovadamente no
+remote. O `--force` abaixo apaga mudança não commitada sem perguntar — é o §6b que torna isso
+seguro, ele é pré-requisito, não recomendação. Rode **este bloco de uma vez** (determinístico —
+não precisa `git worktree list` pra "descobrir" o path):
 
 ```bash
 set -euo pipefail
@@ -161,6 +192,8 @@ here=$(git rev-parse --show-toplevel)                       # o worktree atual
 main=$(git worktree list --porcelain | sed -n '1s/^worktree //p')
 if [ "$here" != "$main" ]; then
   cd "$main"                                                 # não dá pra remover o worktree em que se está
+  # `if` (não `&&`): sob `set -e`, um grep sem match derrubaria o bloco inteiro.
+  if git -C "$here" status --porcelain | grep -q .; then echo "PARE: worktree sujo — nada é removido"; exit 1; fi
   git worktree remove --force "$here"                        # --force: deps/.env/cache não versionados vivem lá
   echo "worktree removido: $here (branch mantida)"
 else

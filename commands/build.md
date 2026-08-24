@@ -131,6 +131,11 @@ kill-switch). `gh` ausente/não autenticado → commit + push seguem; imprima o 
 humano. Ao abrir o PR, o `/ship` já chama `nos_attach_pr(task_id, pr_url)` por ticket vinculado —
 a task entra em `code_review`/`review_state=pending` (**não** vai a `done` aqui).
 
+**Gate de publicação (`/ship §6b`) é obrigatório por ticket** — no `--auto` não há humano
+olhando o resultado, então é a única coisa entre "PR aberto" e trabalho perdido. Vermelho →
+aquele ticket **não** é entregue, o worktree **não** é removido, e ele vai pro handoff como
+`publicação falhou`. Nunca siga pro §6 com o gate vermelho.
+
 **Base do PR:** a base real (`dev`) quando o ticket não depende de nada ainda aberto. Se ele
 depende de um ticket cujo PR **ainda está aberto**, empilhe: `gh pr create --base <branch do
 bloqueador>` — assim o diff mostra só o que é dele.
@@ -177,9 +182,18 @@ Ticket com `pr-reviewer approved` (§6) é **integrado na hora**, sem esperar o 
 
 1. `git merge --no-ff <branch do ticket>` na **branch de integração** (§1). Local — o merge do
    PR no remote continua sendo do humano.
-2. **Conflito de merge inesperado → ESCALE.** Não force, não resolva no chute: pare aquele
+2. **Prove que o merge levou o conteúdo** — `git merge --no-ff` que vira no-op (branch já
+   ancestral, ou merge vazio) passa silencioso e a wave seguinte parte de uma base sem o
+   ticket. Confirme antes de marcar como integrado:
+
+   ```bash
+   git merge-base --is-ancestor "<branch do ticket>" HEAD \
+     && echo "✅ integrado: <branch> está na integração" \
+     || { echo "❌ <branch> NÃO está na integração — não marque como entregue"; exit 1; }
+   ```
+3. **Conflito de merge inesperado → ESCALE.** Não force, não resolva no chute: pare aquele
    ticket, deixe o PR aberto e leve pro handoff. Os outros seguem.
-3. Se a wave tocou áreas comuns, rode o **gate de segurança na integração** (§4) — o verde por
+4. Se a wave tocou áreas comuns, rode o **gate de segurança na integração** (§4) — o verde por
    ticket não garante o verde do conjunto.
 
 Fechada a wave (todos os tickets dela entregues, escalados, ou ainda em `changes_requested`),
@@ -211,10 +225,15 @@ Imprima, nesta ordem:
    veredito do gate interno (§3) e do `pr-reviewer` (§6), iterações consumidas, **tokens
    gastos** (some o `tokens` de cada `nos_exec_status`/run-event do ticket) e em **qual wave**
    ele rodou. Marque `done` via degradação (§6) quando for o caso.
-2. **Tickets não escalonados** e o motivo (`blocked` / `conflict` / `cap`), do último `noclaf wave`.
-3. Estado de **lint/build/testes** — por ticket e na branch de integração.
-4. **Branches e worktrees** — a de integração e a de cada ticket, e se os worktrees ficaram.
-5. **Por último, cada em sua própria linha — as URLs dos PRs.**
+2. **PRs abertos que ainda NÃO entraram no remote** — `approved` + merge local **não** é
+   conteúdo na base remota; o merge do PR é humano (§1). Liste-os explicitamente
+   (`gh pr list --state open --json number,title,headRefName`) sob o título "aguardando merge
+   humano". Sem essa linha, o build parece 100% entregue com o trabalho preso em PR.
+3. **Tickets não escalonados** e o motivo (`blocked` / `conflict` / `cap`), do último `noclaf wave`.
+4. Estado de **lint/build/testes** — por ticket e na branch de integração.
+5. **Branches e worktrees** — a de integração e a de cada ticket, e se os worktrees ficaram.
+   Worktree **mantido** por gate de publicação vermelho (§5) entra aqui com o motivo.
+6. **Por último, cada em sua própria linha — as URLs dos PRs.**
 
 Deixe explícito: quem **escalou no §3** não foi pra remote; quem **escalou no §6** tem PR aberto
 mas segue em `code_review` esperando humano; quem **conflitou no merge (§7)** ficou de fora da
