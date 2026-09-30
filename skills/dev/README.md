@@ -7,6 +7,7 @@ Pra escrever, revisar e projetar código. Agrupadas por **stack** — a pasta é
 - [caveman](general/caveman/SKILL.md) — resposta ultra-comprimida (~75% menos tokens).
 - [council](general/council/SKILL.md) — conselho de 5 lentes que mata concordância fácil numa decisão.
 - [drytify](general/drytify/SKILL.md) — acha e remove duplicação real de código (DRY com bom senso).
+- [get-prompt](general/get-prompt/SKILL.md) — pedido, tarefa do NOS ou issue → prompt pra IA que escreve o código (Lovable, Bolt, Codex…), com reuso, NÃO FAÇA, critérios e testes; depois revisa a entrega. Contrato do projeto no `AGENTS.md`/`CLAUDE.md`.
 - [grill-me](general/grill-me/SKILL.md) — te sabatina sobre um plano/design até resolver cada decisão.
 - [handoff](general/handoff/SKILL.md) — compacta a conversa num doc de continuidade pra outro agente.
 - [init-sdd](general/init-sdd/SKILL.md) — monta a estrutura SDD (`docs/`, templates, `AGENTS.md`) no repo; ao analisar, semeia specs em `draft` e ADRs em `proposed`. Templates em [templates/](general/init-sdd/templates/).
