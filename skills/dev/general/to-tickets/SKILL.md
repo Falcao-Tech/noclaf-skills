@@ -89,7 +89,10 @@ der e registre o que faltou.
     `gh api orgs/<org>/issue-types -q '.[].name'` (404 / repo pessoal → omita `--type`). Mapa:
     comportamento novo → `Feature`; correção → `Bug`; chore/refactor/infra → `Task`.
   - **Relationships** — as arestas do DAG são **campos nativos**, não texto: `--blocked-by <n>`
-    por bloqueador, e `--parent <n>` quando a spec já virou issue-pai (`issue:` no frontmatter).
+    por bloqueador, e `--parent <n>` para o pai. **Com épicos**, o pai de um ticket é a issue do
+    **épico** (que por sua vez é sub-issue da spec) — assim a árvore fica spec → épico → ticket
+    e o `/build` consegue abrir um PR por épico. Sem épicos, o pai é a issue da spec
+    (`issue:` no frontmatter).
     O corpo **não** repete a lista de bloqueadores. Só se o `gh` recusar as flags (versão
     antiga) caia pro `Bloqueado por #N` no corpo — e registre a degradação no handoff.
   - **Label** — só os padrão do GitHub (`enhancement` / `bug` / `documentation`), casando com o
@@ -103,7 +106,9 @@ der e registre o que faltou.
 - **Local (registro)** → escreva `docs/tickets/<stem-da-spec | slug>.md` (crie a pasta se
   faltar), todos os tickets em ordem de dependência, cada um com "Bloqueado por" **e os
   identificadores criados** (`task_id` do NOS, `#N` do GitHub) — é o que o `/implement` e o
-  `/ship` leem depois pra referenciar e fechar.
+  `/ship` leem depois pra referenciar e fechar. Havendo épicos, cada ticket leva também a linha
+  **`**Épico:**`** (ver TICKET-PATTERNS) e os tickets saem **agrupados por épico**, épicos em
+  ordem de dependência — é assim que o `/build` monta um PR por épico.
 
 ## Depois
 

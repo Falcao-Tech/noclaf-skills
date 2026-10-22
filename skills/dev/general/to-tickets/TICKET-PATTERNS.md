@@ -80,6 +80,10 @@ linear, isso é de cima para baixo.
 ## <título do ticket>
 **O que construir:** o comportamento ponta-a-ponta que este ticket faz funcionar, pela ótica
 do usuário — não uma lista de implementação camada por camada.
+**Épico:** `E-<n> · <título do épico> (#<issue do épico>)` quando a spec foi fatiada em épicos;
+sem épicos, omita a linha. É o campo que o `/build` lê pra agrupar tickets num PR só por épico —
+o `noclaf wave` ignora esta linha (o parser só olha `**Bloqueado por:**` e os `- [ ]`).
+
 **Bloqueado por:** os títulos dos tickets que o gatam, ou "Nenhum — pode começar já".
 - [ ] Critério de aceitação 1
 - [ ] Critério de aceitação 2

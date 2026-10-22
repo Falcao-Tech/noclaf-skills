@@ -42,6 +42,24 @@ nunca reincorpore os diffs ou os outputs completos dos subagentes no seu context
   atualizada. É nela que os tickets aprovados entram (passo 7); ela é o ponto de partida das
   waves seguintes. **Local**: você nunca faz merge de PR no remote — isso é do humano.
 
+### 1b. Épicos: uma unidade de entrega por vez, PRs empilhados
+
+Leia o registro (`docs/tickets/<doc>.md`). Cada ticket com a linha **`**Épico:**`** pertence a
+um épico; **sem essa linha em nenhum ticket, pule esta seção inteira** — o fluxo antigo (um PR
+por ticket) segue valendo e nada muda.
+
+Havendo épicos, a unidade de entrega passa a ser o **épico**, não o ticket:
+
+- **Um por vez, na ordem do registro** (o `to-tickets` grava os épicos em ordem de dependência).
+  Não abra o épico seguinte antes de fechar o atual — o empilhamento depende disso.
+- **Branch por épico:** `feature/<spec-id>-e<n>-<slug-do-épico>`. O **primeiro** épico sai da
+  base atualizada; **cada épico seguinte sai da branch do épico anterior** — é o que faz o diff
+  do PR mostrar só o que é dele, em vez de repetir o épico de baixo.
+- **A branch do épico é a branch de integração daquele épico.** Os worktrees dos tickets saem
+  dela (não da base), e os tickets aprovados entram nela pelo passo 7.
+- Anote, por épico: `id` (`E-n`), issue do épico (`#N`), branch, tickets que o compõem, e o PR
+  quando existir. É essa tabela que o handoff (§9) imprime.
+
 ## 2. Escalonamento da wave (frontier do DAG)
 
 Rode o scheduler — **não** calcule o frontier na mão:
@@ -55,6 +73,10 @@ Saída (stdout JSON): `{ ok, maxParallelism, wave, waiting, done }`. `wave` é a
 (conflitantes **serializam** pra wave seguinte). `waiting` traz o motivo de cada um que ficou
 de fora (`blocked` = dependência pendente, `conflict` = arquivo disputado, `cap` = teto).
 
+- **Com épicos:** o scheduler enxerga o DAG inteiro; **filtre a `wave` para os tickets do épico
+  corrente** e deixe o resto para quando chegar a vez deles. Se a wave filtrada sair vazia mas
+  houver ticket do épico em `waiting` por `blocked`, o bloqueador está num épico ainda não
+  entregue — **a ordem dos épicos no registro está errada**: PARE e reporte, não reordene sozinho.
 - `wave` **vazia** com `waiting` não vazio → há dependência não satisfeita ou tudo em voo;
   reavalie após a integração (passo 7). Vazia com `waiting` vazio → **acabou**, vá pro handoff.
 - **Nunca** escalone um ticket com bloqueador pendente, nem force um que o scheduler segurou.
@@ -115,9 +137,25 @@ No worktree do ticket, re-rode **lint + build + testes** do repo (os scripts que
 invente). Vermelho → **PARE aquele ticket** e reporte; **nunca** dê push em código quebrado. Se
 a wave tocou áreas comuns, rode o gate **de novo na branch de integração** depois do passo 7.
 
-## 5. Fecho por ticket (motor do /ship)
+## 5. Fecho (motor do /ship)
 
-**Um PR por ticket** (não por wave) — casa com o modelo de review de uma revisão por PR.
+**Com épicos → um PR por épico**, aberto só quando **todos** os tickets dele estiverem
+integrados na branch do épico (§7) e o gate de segurança (§4) estiver verde nela. Ticket
+sozinho não vira PR: ele entra na branch do épico e espera os irmãos.
+
+- **Base do PR:** a branch do **épico anterior** enquanto o PR dela estiver aberto; se ela já
+  foi mergeada no remote, a base real (`dev`). É o empilhamento — cada PR mostra só o seu diff.
+  Confira antes de abrir: `gh pr view <pr do épico anterior> --json state -q .state`.
+- **Corpo do PR:** o template estruturado do `/ship §6`. Na seção `Ticket`, **uma linha por
+  issue com a keyword repetida** (`Closes #82` / `Closes #83` — `Closes #82 #83` fecharia só a
+  primeira), mais a issue do épico. O épico só fecha quando todas as sub-issues fecharem, então
+  liste-o sem keyword: `Épico #81`.
+- **Título:** `<tipo>: <o que o épico entrega>` — o épico, não o último ticket.
+- O gate de publicação do `/ship §6b` vale igual, e agora ele também confere que o GitHub
+  vinculou **todas** as issues citadas.
+
+**Sem épicos → um PR por ticket** (não por wave), como antes — casa com o modelo de review de
+uma revisão por PR.
 
 - **`--review`:** mostre o **plano de commits** (docs vs código, Conventional Commits), o
   `git diff --cached --stat` e a **base do PR**, e **espere OK explícito** antes de qualquer
@@ -201,6 +239,13 @@ Fechada a wave (todos os tickets dela entregues, escalados, ou ainda em `changes
 recompute o frontier. Os worktrees da wave nova saem da **integração atualizada** — nunca da
 base velha. Repita até o scheduler devolver `wave` e `waiting` vazios.
 
+**Com épicos**, a integração de cada ticket é na **branch do épico corrente**, e o ciclo ganha
+um fecho por épico: sem mais tickets do épico no frontier → gate de segurança (§4) na branch do
+épico → **PR do épico** (§5) → **pr-reviewer** sobre esse PR (§6) → só então comece o próximo,
+criando a branch dele **a partir da branch do épico que acabou** (§1b). Épico que escalou não
+vira base de ninguém: **PARE a cadeia ali** e leve ao handoff — empilhar sobre trabalho não
+aprovado propaga o problema para todos os épicos seguintes.
+
 ## 8. Entrega (complemento — sem entrega duplicada)
 
 O `/ship` (§5) já ligou o PR (`nos_attach_pr`) e, no caminho `approved`, o `nos_set_review(...,
@@ -221,19 +266,22 @@ na degradação). Aqui só resta:
 
 Imprima, nesta ordem:
 
-1. **Tabela por ticket** — id, estado final (`entregue` / `escalado` / `em changes_requested`),
+1. **Tabela por épico** (quando houver) — `E-n`, issue, branch, tickets que entraram, PR e sua
+   base (deixando visível a pilha: `E-2` sobre `E-1`), e o veredito do `pr-reviewer`. Épico
+   interrompido → diga qual e o que ficou sem começar por causa dele.
+2. **Tabela por ticket** — id, estado final (`entregue` / `escalado` / `em changes_requested`),
    veredito do gate interno (§3) e do `pr-reviewer` (§6), iterações consumidas, **tokens
    gastos** (some o `tokens` de cada `nos_exec_status`/run-event do ticket) e em **qual wave**
    ele rodou. Marque `done` via degradação (§6) quando for o caso.
-2. **PRs abertos que ainda NÃO entraram no remote** — `approved` + merge local **não** é
+3. **PRs abertos que ainda NÃO entraram no remote** — `approved` + merge local **não** é
    conteúdo na base remota; o merge do PR é humano (§1). Liste-os explicitamente
    (`gh pr list --state open --json number,title,headRefName`) sob o título "aguardando merge
    humano". Sem essa linha, o build parece 100% entregue com o trabalho preso em PR.
-3. **Tickets não escalonados** e o motivo (`blocked` / `conflict` / `cap`), do último `noclaf wave`.
-4. Estado de **lint/build/testes** — por ticket e na branch de integração.
-5. **Branches e worktrees** — a de integração e a de cada ticket, e se os worktrees ficaram.
+4. **Tickets não escalonados** e o motivo (`blocked` / `conflict` / `cap`), do último `noclaf wave`.
+5. Estado de **lint/build/testes** — por ticket e na branch de integração.
+6. **Branches e worktrees** — a de integração e a de cada ticket, e se os worktrees ficaram.
    Worktree **mantido** por gate de publicação vermelho (§5) entra aqui com o motivo.
-6. **Por último, cada em sua própria linha — as URLs dos PRs.**
+7. **Por último, cada em sua própria linha — as URLs dos PRs.**
 
 Deixe explícito: quem **escalou no §3** não foi pra remote; quem **escalou no §6** tem PR aberto
 mas segue em `code_review` esperando humano; quem **conflitou no merge (§7)** ficou de fora da
