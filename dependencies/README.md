@@ -6,6 +6,8 @@ Cada arquivo em `dependencies/` **é** uma dependência declarada — a presenç
 
 O campo `skills:` aceita `owner/repo` **ou** `owner/repo/skill` (skill específica da [skills.sh](https://skills.sh)) e vira `npx skills add <valor>`.
 
+O campo `bin:` (opcional) nomeia o binário da ferramenta: se ele já está no PATH, a CLI considera a dependência instalada e não mostra os passos manuais.
+
 ## Prioridade local sobre skills.sh
 
 O que declaramos localmente (em `skills/`, `commands/`, `agents/`) **tem prioridade** sobre a mesma skill online — as nossas são *overrides* customizados. Por isso **não** criamos dependency pra skill da skills.sh que já temos local (`caveman`, `handoff`, `grill-me`, `to-tickets`, `implement`, `emil-design-eng`, `review`…). Só puxamos skills da skills.sh que **acrescentam** algo que não temos — tipicamente as que **reforçam as rules**. Ao adicionar uma nova, cheque se já existe um equivalente em `skills/` antes.

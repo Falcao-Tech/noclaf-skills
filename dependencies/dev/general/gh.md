@@ -8,6 +8,7 @@ manual: |
   Depois: `gh auth login` (escolha GitHub.com e um método). Confira com `gh auth status`.
   Campos nativos de issue (`--type`, `--parent`, `--blocked-by`) exigem `gh` >= 2.94; `gh issue develop` é bem mais antigo.
 install: brew install gh && gh auth login
+bin: gh
 ---
 
 # GitHub CLI (gh)
