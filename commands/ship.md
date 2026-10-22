@@ -104,9 +104,18 @@ Mostre ao usuário e **espere aprovação explícita**:
     branch (§0) e/ou os identificadores do registro de tickets (§7); vários ids num build
     multi-ticket → liste todos.
 
+    **Uma keyword por issue, uma issue por linha.** `Closes #82 #83 #84` fecha **só a #82**: o
+    GitHub associa a keyword apenas à referência imediatamente seguinte, e ignora o resto da
+    lista. Repita a palavra em cada linha — `Closes #82` / `Closes #83`. Issue de outro repo
+    → `Closes Falcao-Tech/outro-repo#7`. Task do NOS (`NOS-151`) **não** é issue do GitHub:
+    liste sem keyword, ela sai de `code_review` pelo veredito do review, não pelo merge.
+
     ```markdown
     ## Ticket
-    <ticket-id(s) ou link(s) da issue/task; `sem ticket vinculado` se não houver>
+    - Closes #82
+    - Closes #83
+    - NOS-151 (task do NOS — fecha pelo review, não pelo merge)
+    <uma linha por item; `sem ticket vinculado` se não houver nenhum>
 
     ## Escopo
     <o que este PR entrega — 1-3 linhas>
@@ -152,6 +161,11 @@ remote=$(git rev-parse "origin/$branch" 2>/dev/null || echo "")
 # 4. O PR tem diff de verdade (pulado se não houver gh).
 files=$(gh pr view "$branch" --json files -q '.files|length' 2>/dev/null || echo skip)
 [ "$files" = "0" ] && { echo "❌ PR aberto com 0 arquivos"; fail=1; }
+# 5. Toda issue citada na seção `Ticket` é de fato fechada pelo PR. Conta REFERÊNCIAS, não
+#    keywords: `Closes #82 #83` tem 1 keyword e 2 refs, e o GitHub fecha só a #82.
+refs=$(gh pr view "$branch" --json body -q '.body' 2>/dev/null | awk '/^## Ticket/{f=1;next} /^## /{f=0} f' | grep -oE '#[0-9]+' | wc -l | tr -d ' ')
+linked=$(gh pr view "$branch" --json closingIssuesReferences -q '.closingIssuesReferences|length' 2>/dev/null || echo "$refs")
+[ "$refs" -ne "$linked" ] && { echo "❌ a seção Ticket cita $refs issues mas o PR fecha $linked — repita a keyword em cada uma"; fail=1; }
 [ "$fail" = 0 ] && echo "✅ conteúdo publicado ($files arquivos no PR)" || { echo "PARE: worktree e branch PRESERVADOS"; exit 1; }
 ```
 
@@ -165,10 +179,21 @@ Só se o **push + PR do passo 6 deram certo** — o trabalho foi entregue **ao r
 cliente ainda. Descubra os identificadores no registro: `docs/tickets/<stem>.md` (o `task_id` do
 NOS / `#N` do GitHub que o `/to-tickets` gravou) e/ou o `issue:` do frontmatter da spec.
 
-- **GitHub** (se `gh` disponível) → **cheque o estado primeiro e só feche o que ainda está
-  aberto** (idempotente — nunca re-feche o que já está completo): `gh issue view <n> --json
-  state -q .state`. `OPEN` → `gh issue close <n> --comment "Entregue no PR <url>"`. Já
-  `CLOSED` → pule.
+- **GitHub** (se `gh` disponível) → **todas** as issues entregues, não só a primeira; e
+  **cheque o estado antes** de cada uma (idempotente — nunca re-feche o que já está completo).
+  Rode o laço com a lista completa de números:
+
+  ```bash
+  pr_url="__PR_URL__"
+  for n in __ISSUES__; do                       # ex.: 82 83 84 85
+    st=$(gh issue view "$n" --json state -q .state 2>/dev/null || echo MISSING)
+    case "$st" in
+      OPEN)    gh issue close "$n" --comment "Entregue no PR $pr_url" >/dev/null && echo "fechada #$n";;
+      CLOSED)  echo "já fechada #$n — pulada";;
+      *)       echo "não encontrada #$n — ignorada";;
+    esac
+  done
+  ```
 - **NOS** → **nada a fazer aqui.** `nos_attach_pr` (§6) já moveu a task pra `code_review`; o
   `/ship` **não** move mais incondicionalmente pra `done`/`delivered` nem chama
   `nos_record_delivery` neste passo — isso passou a depender do **veredito do review**
