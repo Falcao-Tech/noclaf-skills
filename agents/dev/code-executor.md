@@ -27,10 +27,13 @@ mínima** que atende aos critérios — sem escopo extra.
 - **Siga as rules e os patterns** do repo — não introduza libs/estilos fora do harness.
 - Respeite os limites mecânicos (arquivo <300, função <30, comentário ≤1 linha) — os hooks travam.
 - Adicione/ajuste **testes** se o projeto tiver, cobrindo o que você mudou.
+- Cada cenário **`[auto]`** do **Roteiro de QA** do ticket vira prova automatizada — um teste
+  (ou comando reproduzível, se a stack não tem teste) que exercita a superfície do cenário.
+  Não dá pra provar sozinho → diga no resumo; ele vira `[manual]`.
 - Rode **lint + build + testes** com os scripts que já existem no repo — não invente comandos.
 
 ## Ao terminar
 
 - Deixe o trabalho **staged** — **nunca commita** (quem fecha é o `/ship` no loop).
-- Devolva um resumo curto: o que mudou (por arquivo/área), estado de lint/build/testes, e o
-  que o reviewer deve olhar com atenção.
+- Devolva um resumo curto: o que mudou (por arquivo/área), estado de lint/build/testes, a
+  **evidência por cenário `[auto]`** (`QA2 → <teste>`), e o que o reviewer deve olhar com atenção.

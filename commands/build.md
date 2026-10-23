@@ -188,11 +188,17 @@ o hunk). Com vários PRs abertos na wave, **rode um pr-reviewer por PR, em paral
 
 Reaja ao veredito **por ticket vinculado ao PR** (`task_id` do registro de tickets, §0/§5):
 
-- **`approved`** → chame `nos_set_review(task_id, verdict: "approved", reviewer:
-  "pr-reviewer", advance: true)`. A tool move a task pra `done` **e** grava a entrega (chama
-  `nos_record_delivery` internamente, com `review_verdict: approved` e `reviewer: pr-reviewer`)
-  — **não** chame `nos_record_delivery` você mesmo para este ticket (ver §8). Marque os critérios
-  do ticket no doc e siga pro passo 7.
+- **`approved`** → depende do **Roteiro de QA** do ticket (ver §6b):
+  - **sem cenário `[manual]` em aberto** → `nos_set_review(task_id, verdict: "approved", reviewer:
+    "pr-reviewer", advance: true)`. A tool move a task pra `done` **e** grava a entrega (chama
+    `nos_record_delivery` internamente, com `review_verdict: approved` e `reviewer: pr-reviewer`)
+    — **não** chame `nos_record_delivery` você mesmo para este ticket (ver §8).
+  - **com `[manual]` em aberto** → `nos_set_review(..., advance: false)` e rode a skill `to-qa`
+    no ticket (card + roteiro reconciliado + `qa`). A entrega fica pro `to-qa` quando o QA
+    humano aprovar.
+
+  Nos dois casos marque os critérios do ticket no doc e siga pro passo 7 — o QA humano **não**
+  segura o DAG.
 - **`changes_requested`** → chame `nos_set_review(task_id, verdict: "changes_requested", note:
   <motivos do pr-reviewer>)` — mantém a task em `code_review` e posta os motivos como
   comentário. **Realimente o code-executor** daquele ticket com os motivos como instrução: uma
@@ -206,13 +212,20 @@ Reaja ao veredito **por ticket vinculado ao PR** (`task_id` do registro de ticke
     task **fica em `code_review`**, sem `nos_set_review(advance)` e sem entrega.
 - **Degradação** — se o `pr-reviewer` não puder rodar (subagente indisponível, diff
   inacessível, etc.), **não trave o loop**: caia no veredito do gate interno (`code-reviewer`,
-  §3) daquele ticket como substituto — se ele aprovou, chame `nos_set_review(task_id, verdict:
-  "approved", reviewer: "internal", advance: true)` no lugar; **avise explicitamente** no
-  handoff (§9) que o review externo não rodou e por quê.
+  §3) daquele ticket como substituto — se ele aprovou, siga a mesma regra do `approved` acima
+  com `reviewer: "internal"`; **avise explicitamente** no handoff (§9) que o review externo não
+  rodou e por quê.
 
 O **code-reviewer** (§3) continua como 1ª linha, pré-push, ticket a ticket — o **pr-reviewer**
 é a 2ª opinião, pós-push, sobre o PR. Ele complementa, **não substitui**, o gate interno.
 Paralelizar não afrouxa nenhum dos dois gates: eles rodam igual, só que mais de um por vez.
+
+### 6b. Gate de QA
+
+Os cenários **`[auto]`** do Roteiro de QA já foram provados no loop (o `code-executor` os
+vira teste; o `code-reviewer` não aprova sem eles; o §4 roda os testes). Aqui só se decide o
+destino da task: sobrou `[manual]` em aberto → **`qa`** via `to-qa`; senão → **`done`**. Ticket
+sem Roteiro de QA (registro antigo) → trate como sem `[manual]`, e avise no handoff.
 
 ## 7. Integração + próxima wave (merge-aware)
 
@@ -269,7 +282,7 @@ Imprima, nesta ordem:
 1. **Tabela por épico** (quando houver) — `E-n`, issue, branch, tickets que entraram, PR e sua
    base (deixando visível a pilha: `E-2` sobre `E-1`), e o veredito do `pr-reviewer`. Épico
    interrompido → diga qual e o que ficou sem começar por causa dele.
-2. **Tabela por ticket** — id, estado final (`entregue` / `escalado` / `em changes_requested`),
+2. **Tabela por ticket** — id, estado final (`entregue` / `aguardando QA` / `escalado` / `em changes_requested`),
    veredito do gate interno (§3) e do `pr-reviewer` (§6), iterações consumidas, **tokens
    gastos** (some o `tokens` de cada `nos_exec_status`/run-event do ticket) e em **qual wave**
    ele rodou. Marque `done` via degradação (§6) quando for o caso.

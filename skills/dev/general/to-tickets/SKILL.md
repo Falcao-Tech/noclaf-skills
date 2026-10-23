@@ -62,7 +62,8 @@ der e registre o que faltou.
   sessão (`nos_set_project` se preciso). Por ticket: **título humano** (orientado a resultado,
   sem `WS·[repo]`), `nos_create_task` com **descrição curta** (uma linha + `### Contexto` com
   repo/bloqueadores), e então **checklists nativos** via `nos_add_checklist` — uma **Implementação**
-  (passos técnicos) e uma **Definition of Done** (critérios). Ver os templates em TICKET-PATTERNS.
+  (passos técnicos), uma **Definition of Done** (critérios) e um **Roteiro de QA** (cenários
+  da fatia, ver *Roteiro de QA por ticket*). Ver os templates em TICKET-PATTERNS.
   `nos_add_checklist` indisponível → DoD como `- [ ]` na descrição. As tools `nos_*` são MCP e
   **não dependem de shell**, então rodam no Cowork — este é o canal que nunca falta.
 - **GitHub (quando o `gh` estiver disponível)** → uma issue por ticket, **em ordem de

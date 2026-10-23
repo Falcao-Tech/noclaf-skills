@@ -15,6 +15,7 @@ Pra escrever, revisar e projetar código. Agrupadas por **stack** — a pasta é
 - [review-changes](general/review-changes/SKILL.md) — review de qualidade/limpeza do diff (não caça bug).
 - [to-briefing](general/to-briefing/SKILL.md) — vira um briefing/questionário em Markdown pra outra pessoa (cliente, PM, outro time) preencher.
 - [to-doc](general/to-doc/SKILL.md) — cria um doc do SDD (spec/bug/adr) e para. Status por tipo: spec `draft | ready | in-progress | done` · bug `open | fixed` · adr `proposed | accepted | superseded`. Padrões por tipo: [SPEC](general/to-doc/SPEC-PATTERN.md) · [BUG](general/to-doc/BUG-PATTERN.md) · [ADR](general/to-doc/ADR-PATTERN.md).
+- [to-qa](general/to-qa/SKILL.md) — monta o card do QA humano a partir do Roteiro de QA (reconciliado com a entrega) e registra o resultado (done / rejected + bug).
 - [to-tickets](general/to-tickets/SKILL.md) — fatia spec/plano/conversa em tickets tracer-bullet (DAG); publica local ou NOS + GitHub. Padrões em [TICKET-PATTERNS](general/to-tickets/TICKET-PATTERNS.md).
 - [wait-what](general/wait-what/SKILL.md) — reexplica a última mensagem em português técnico simplificado (ASD-STE100 adaptado).
 - [zoom-out](general/zoom-out/SKILL.md) — sobe um nível de abstração e mapeia módulos/callers.

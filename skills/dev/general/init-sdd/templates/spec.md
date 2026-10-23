@@ -58,8 +58,25 @@ flowchart TD
 
 ## Critérios de aceitação
 <!-- Verificáveis, não achismo: Dado/Quando/Então (ou uma condição de aprovação clara), derivados das Histórias de usuário. Cada um nomeia a(s) Tarefa(s) que o satisfazem, ex.: (T1, T3). Todo critério mapeia para ≥1 Tarefa; toda Tarefa é coberta por ≥1 critério. -->
-- [ ] (T?) Dado … quando … então …
-- [ ] (T?) Dado … quando … então …
+- [ ] CA1 (T?) Dado … quando … então …
+- [ ] CA2 (T?) Dado … quando … então …
+
+## Plano de QA
+<!-- Como QUEM TESTA confere a entrega — escrito antes de codar, pra o agente implementar contra ele. Descreve o que a pessoa vê e faz na superfície, nunca como o código foi escrito (sem caminho de arquivo, classe, função). Todo CA tem ≥1 cenário. [auto] = o agente prova sozinho (teste automatizado / comando reproduzível) e anexa a evidência; [manual] = QA humano. -->
+**Superfície:** <tela | CLI | API | job> · **Ambiente:** <homologação | local> · **Perfil:** <tipo de usuário/credencial>
+
+### Massa de dados
+<!-- O que precisa existir ANTES de testar: registros e em qual estado. -->
+-
+
+### Cenários
+<!-- `QA<n> [auto|manual] (CA<n>) <ação na superfície> → <resultado visível>`. Mensagem exibida citada "exata" (ainda não existe? marque "a confirmar" — o fechamento do QA reconcilia com o código). Inclua o caminho negativo visível (erro, vazio, sem permissão) quando a superfície o mostra. Dado que não aparece pra quem usa (histórico, log) → diga onde conferir. -->
+- [ ] QA1 [manual] (CA1) … → …
+- [ ] QA2 [auto] (CA2) … → …
+
+### Regressão
+<!-- Fluxo vizinho/antigo que não pode quebrar. Delete se não houver. -->
+- [ ] QA3 [auto] … continua …
 
 ## Registro de decisões
 <!-- Append-only — decisões LOCAIS a esta spec. Data + a escolha + o porquê. Decisões transversais vão para um ADR em docs/decisions/ (`to-doc adr`), não aqui. -->
