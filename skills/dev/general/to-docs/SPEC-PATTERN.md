@@ -26,7 +26,7 @@ qualquer caso: **lacuna genuína NÃO se inventa** — vira **Questão em aberto
 4. **Scaffold a partir de `docs/_templates/spec.md` e preencha o que já sabe.** Se faltar, use
    as seções: Problema | Solução | Histórias de usuário | Escopo (com **Fora de escopo**) |
    Restrições | Questões em aberto | Decisões de implementação | Decisões de teste | Tarefas |
-   Critérios de aceitação | Registro de decisões | Notas.
+   Critérios de aceitação | Plano de QA | Registro de decisões | Notas.
    - **Histórias de usuário:** lista numerada e **extensa** — "Como <ator>, quero <feature>,
      para <benefício>." É daqui que os Critérios de aceitação derivam.
    - **Decisões de implementação:** módulos/interfaces, schema, contratos de API, decisões
@@ -36,10 +36,19 @@ qualquer caso: **lacuna genuína NÃO se inventa** — vira **Questão em aberto
    - **Decisões de teste:** o que é um bom teste aqui (só comportamento externo), quais módulos
      serão testados, prior art no repo.
    - Frontmatter: `id` (entre aspas), `title`, `area`, `status` (passo 5), `created` = hoje,
-     `issue:` vazio. Numere as **Tarefas** `T1, T2…`; cada **Critério** é Dado/Quando/Então
-     nomeando a(s) Tarefa(s), ex.: `(T1) Dado … quando … então …`.
-5. **Status.** Síntese completa (**Questões em aberto** vazio, nada de `TBD`/`<...>`) →
-   `status: ready`. Sobrou lacuna → `status: draft`.
+     `issue:` vazio. Numere as **Tarefas** `T1, T2…`; cada **Critério** é `CA<n>` +
+     Dado/Quando/Então nomeando a(s) Tarefa(s), ex.: `CA1 (T1) Dado … quando … então …`.
+   - **Plano de QA:** como quem testa confere a entrega, **pela superfície** declarada (tela,
+     CLI, API, job) — o que a pessoa faz e vê, nunca como o código foi escrito. Cenários
+     `QA<n> [auto|manual] (CA<n>) ação → resultado visível`; **todo CA tem ≥1 cenário**.
+     `[auto]` = o agente prova sozinho (teste automatizado ou comando reproduzível) — prefira-o
+     sempre que a superfície permitir; `[manual]` = sobra pro QA humano. Superfície `tela` →
+     nada de cenário que só reproduz via Postman/API (corpo inválido, 401 forjado). Inclua
+     **massa de dados** (o que precisa existir antes, em qual estado), o caminho negativo
+     visível e a **regressão** (fluxo vizinho que não pode quebrar). Mensagem exibida vai
+     **exata**; se ainda não existe, marque "a confirmar" — o `to-qa` reconcilia depois.
+5. **Status.** Síntese completa (**Questões em aberto** vazio, nada de `TBD`/`<...>`, todo CA
+   coberto por cenário de QA) → `status: ready`. Sobrou lacuna → `status: draft`.
 6. **Publicação (só spec relativamente complexa + `ready`).** Simples → pule (fica só em
    `docs/specs/`). Complexa (várias histórias/módulos, provável DAG de tickets) **e** `ready` →
    **PERGUNTE se quer publicar como issue**. Só publique se confirmar:

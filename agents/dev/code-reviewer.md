@@ -22,7 +22,7 @@ julgar, e grepe `docs/_map.md` pra situar um símbolo em vez de abrir o arquivo 
 - `docs/_rules/noclaf.md` — rules do projeto (mecânicas + por stack selecionada).
 - `docs/_patterns.md` — patterns reais do repo.
 - `AGENTS.md` — constituição + overview do projeto.
-- Os critérios de aceitação do ticket/spec, se houver.
+- Os critérios de aceitação do ticket/spec e o **Roteiro de QA**, se houver.
 
 ## Valide (o subjetivo)
 
@@ -40,8 +40,9 @@ julgar, e grepe `docs/_map.md` pra situar um símbolo em vez de abrir o arquivo 
 
 Devolva `approved` **somente** quando **todos** valem: (a) as **rules** da stack e os
 **patterns** do repo estão aderidos; (b) **todos** os critérios de aceitação do ticket estão
-atendidos e verificáveis no diff; (c) **nenhuma** violação bloqueante — correção, segurança
-(segredos/RLS/injeção) ou quebra de contrato. Qualquer um falhando → `changes_requested`.
+atendidos e verificáveis no diff, e todo cenário **`[auto]`** do Roteiro de QA tem um teste
+que o prova (ou o executor justificou por que virou `[manual]`); (c) **nenhuma** violação
+bloqueante — correção, segurança (segredos/RLS/injeção) ou quebra de contrato. Qualquer um falhando → `changes_requested`.
 **Notas** consultivas (estilo, melhorias não-bloqueantes) **não** rebaixam o veredito.
 
 ## Saída (sempre este formato)

@@ -85,12 +85,27 @@ sem épicos, omita a linha. É o campo que o `/build` lê pra agrupar tickets nu
 o `noclaf wave` ignora esta linha (o parser só olha `**Bloqueado por:**` e os `- [ ]`).
 
 **Bloqueado por:** os títulos dos tickets que o gatam, ou "Nenhum — pode começar já".
+**Roteiro de QA:** `QA1 [manual]`, `QA3 [auto]` — os cenários do Plano de QA da spec que esta
+fatia entrega (ou cenários próprios, no mesmo formato, quando não há spec).
 - [ ] Critério de aceitação 1
 - [ ] Critério de aceitação 2
 
 ## <título do ticket>
 …
 ```
+
+O **Roteiro de QA** fica numa linha só, **sem** `- [ ]`: o `noclaf wave` só libera os dependentes
+quando todos os `- [ ]` do ticket estão marcados, e um cenário `[manual]` esperando o QA humano
+não pode travar o DAG.
+
+## Roteiro de QA por ticket
+
+Cada ticket carrega os cenários do **Plano de QA** da spec que ele entrega — formato
+`QA<n> [auto|manual] (CA<n>) ação → resultado visível`, mesmas regras da spec (superfície,
+massa de dados, mensagem exata, sem detalhe de código). Sem spec → escreva os cenários da
+fatia no mesmo formato. Todo ticket que muda comportamento visível tem ≥1 cenário; refactor
+puro/expand–contract leva só o de **regressão**. É contra este roteiro que o `code-executor`
+implementa (os `[auto]` viram teste) e que o `to-qa` monta o card do QA humano.
 
 ## Template — tarefa no NOS (descrição curta + checklists nativos)
 
@@ -109,9 +124,11 @@ Depois de criar a task (`nos_create_task`), popule **checklists nativos** com `n
 
 - **Implementação** — os passos técnicos verificáveis da fatia (o que seria sub-ticket vira item aqui).
 - **Definition of Done** — os critérios de aceitação, como condições checáveis.
+- **Roteiro de QA** — um item por cenário, texto completo (`QA1 [manual] (CA1) ação →
+  resultado`), com a massa de dados como primeiro item (`Preparar: …`) quando houver.
 
-`nos_add_checklist` indisponível (MCP antigo) → caia pra `- [ ]` markdown na descrição, sob um
-`### Definition of Done`.
+`nos_add_checklist` indisponível (MCP antigo) → caia pra `- [ ]` markdown na descrição, sob
+`### Definition of Done` e `### Roteiro de QA`.
 
 ## Template — issue no GitHub (markdown)
 
@@ -126,4 +143,7 @@ camada por camada.
 ## Definition of Done
 - [ ] Critério 1
 - [ ] Critério 2
+
+## Roteiro de QA
+- [ ] QA1 [manual] (CA1) ação na superfície → resultado visível
 ```
