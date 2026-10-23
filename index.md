@@ -24,6 +24,11 @@ Subagentes, por seção — índice: [agents](agents/README.md).
 - **[dev](agents/dev/README.md)** — execução de código (vazio).
 - **[support](agents/support/README.md)** — atendimento ao cliente (vazio).
 
+## Squad
+
+Perfis dos agentes do Dev Squad (Otávio, Olívia, Bruce) que rodam no worker — **não** sincronizados
+pro `~/.claude`; o `noclaf sync --agent <nome>` gera o settings deles. Índice: [squad](squad/README.md).
+
 ## Dependencies
 
 Libs externas que alguns commands precisam — **não** sincronizadas. Índice: [dependencies](dependencies/README.md).

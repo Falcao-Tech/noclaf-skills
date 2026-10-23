@@ -12,6 +12,7 @@
     "agents",
     "hooks",
     "rules",
+    "squad",
     "dependencies",
     "index.md",
     "README.md"
