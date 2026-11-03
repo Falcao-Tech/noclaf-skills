@@ -53,16 +53,23 @@ Isto é **determinístico** — não explore com `ls`/`git branch`/`git worktree
 `stem` e `branch` (operação de string, a partir do passo 0) e rode **o bloco abaixo de uma
 vez só**: ele acha a raiz e a default branch, cria-ou-reutiliza o worktree e instala deps.
 
-- `stem`: SPEC → nome do arquivo da spec sem `.md` (já é `<id>-<slug>`; **não** re-prefixe o
-  id). BUG → `<slug>`. TICKETS → `<ticket-id>-<slug>` quando houver um id de ticket (chave do
-  NOS tipo `NOS-151`, ou `<n>` de uma issue do GitHub); sem id vinculado → `<slug>` curto.
-- `branch`: SPEC/TICKETS → `feature/<stem>`. BUG → `fix/<stem>`. O prefixo (`feature`/`fix`)
-  dirige a inferência de tipo do `/ship`; o `<ticket-id>` embutido no stem deixa a chave do
-  ticket **extraível por regex** da branch (`[A-Z]+-[0-9]+` ou `#?[0-9]+`).
+**Padrão de branch da empresa (obrigatório):** `<tipo>/<referência>-<descrição>` — ex.:
+`feature/GSG-600-report-profile`. Nenhuma branch nasce fora dele.
+
+- `tipo`: SPEC/TICKETS → `feature` (coisa nova). BUG → `bugfix`; `hotfix` só quando a nota do
+  bug diz `kind: hotfix` (bug pesado em produção). Na dúvida entre os dois, pergunte.
+- `referência`: a **chave da tarefa** no formato `[A-Z][A-Z0-9]*-[0-9]+` (`GSG-600`, `NOS-151`) —
+  do ticket (TICKETS), do `issue:` da spec ou da nota do bug. Número de issue do GitHub (`#N`)
+  **não** serve. Sem chave → **PARE e pergunte** a chave da tarefa; nunca invente nem omita.
+- `descrição`: resumo em kebab-case, minúsculo, sem acento, 2–5 palavras (`report-profile`).
+- `stem` = `<referência>-<descrição>`; `branch` = `<tipo>/<stem>`. O tipo dirige a inferência de
+  commit do `/ship`; a referência deixa a chave **extraível por regex** da branch.
 
 ```bash
 set -euo pipefail
 stem="__STEM__"; branch="__BRANCH__"                 # calculados acima; não use ls pra "achar" nada
+[[ "$branch" =~ ^(feature|bugfix|hotfix)/[A-Z][A-Z0-9]*-[0-9]+-[a-z0-9]+(-[a-z0-9]+)*$ ]] \
+  || { echo "PARE: '$branch' fora do padrão <feature|bugfix|hotfix>/<CHAVE-123>-<descricao>"; exit 1; }
 root=$(git rev-parse --show-toplevel); repo=$(basename "$root")
 def=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')
 def=${def:-$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p')}; def=${def:-main}

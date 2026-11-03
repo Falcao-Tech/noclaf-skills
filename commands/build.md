@@ -36,11 +36,13 @@ nunca reincorpore os diffs ou os outputs completos dos subagentes no seu context
   escalone uma wave sobre base defasada.
 - **Um worktree por ticket** — nada de dois agentes na mesma working tree. Para **cada** ticket
   da wave, rode o **passo 2 do `/implement`** (o bloco determinístico: acha raiz/default, cria
-  worktree + branch, instala deps, registra no IDE) usando o **id do ticket** no stem
-  (`<ticket-id>-<slug>`), de modo que a chave saia por regex da branch.
+  worktree + branch, instala deps, registra no IDE) — a branch segue o **padrão obrigatório**
+  `<feature|bugfix|hotfix>/<CHAVE-123>-<descricao>` definido lá, com a chave do ticket como
+  referência. Ticket sem chave → **PARE** e peça; não escalone ele.
 - **Branch de integração** — mantenha uma `build/<stem>-integration` local, criada da base
   atualizada. É nela que os tickets aprovados entram (passo 7); ela é o ponto de partida das
-  waves seguintes. **Local**: você nunca faz merge de PR no remote — isso é do humano.
+  waves seguintes. **Local**: nunca vai pro remote (por isso fica fora do padrão de branch) —
+  e você nunca faz merge de PR no remote, isso é do humano.
 
 ### 1b. Épicos: uma unidade de entrega por vez, PRs empilhados
 
@@ -52,7 +54,8 @@ Havendo épicos, a unidade de entrega passa a ser o **épico**, não o ticket:
 
 - **Um por vez, na ordem do registro** (o `to-tickets` grava os épicos em ordem de dependência).
   Não abra o épico seguinte antes de fechar o atual — o empilhamento depende disso.
-- **Branch por épico:** `feature/<spec-id>-e<n>-<slug-do-épico>`. O **primeiro** épico sai da
+- **Branch por épico:** `feature/<CHAVE>-<slug-do-épico>` (padrão obrigatório do `/implement §2`),
+  com a chave da tarefa do épico no NOS — sem uma, a do primeiro ticket dele. O **primeiro** épico sai da
   base atualizada; **cada épico seguinte sai da branch do épico anterior** — é o que faz o diff
   do PR mostrar só o que é dele, em vez de repetir o épico de baixo.
 - **A branch do épico é a branch de integração daquele épico.** Os worktrees dos tickets saem

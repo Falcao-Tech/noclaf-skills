@@ -24,17 +24,25 @@ cur=$(git rev-parse --abbrev-ref HEAD)
 def=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@'); def=${def:-main}
 case "$cur" in main|master|dev|"$def") echo "PARE: '$cur' é branch-base — crie uma branch de trabalho antes."; exit 1;; esac
 echo "branch de trabalho: $cur"
+[[ "$cur" =~ ^(feature|bugfix|hotfix)/[A-Z][A-Z0-9]*-[0-9]+-[a-z0-9]+(-[a-z0-9]+)*$ ]] \
+  || { echo "PARE: '$cur' fora do padrão <feature|bugfix|hotfix>/<CHAVE-123>-<descricao>"; exit 1; }
 ```
 
-Passou → derive o tipo (pra escolher o tipo do commit de código + montar o corpo do PR) e
-**extraia o `ticket-id`** da branch (`[A-Z]+-[0-9]+` p/ chave do NOS, ou `#?[0-9]+` p/ issue
-do GitHub) — guarde pra seção `Ticket` do corpo do PR (§6); nenhum casou → `ticket-id` vazio:
+**Padrão de branch da empresa (obrigatório):** `<tipo>/<referência>-<descrição>` — tipo
+`feature` (coisa nova), `bugfix` (bug) ou `hotfix` (bug pesado em produção); referência = chave
+da tarefa (`GSG-600`); descrição em kebab-case (`feature/GSG-600-report-profile`). Fora do
+padrão → **PARE antes de commitar**: proponha o nome certo (pergunte a chave se não souber) e,
+com o OK do usuário, `git branch -m <novo>` — se a antiga já estava no remote, avise que o PR
+dela não acompanha o rename.
 
-- `feature/<ticket-id>-<slug>` (ou `feature/<slug>`) → **spec**: `feat:` por padrão; leia a spec em `docs/specs/<area>/<slug>.md` pro corpo.
-- `fix/<ticket-id>-<slug>` (ou `fix/<slug>`) → **bug**: `fix:` por padrão.
-- **Qualquer outra branch de trabalho** (feita à mão, sem passar pelo `/implement`) → **prossiga**:
-  infira o tipo pela natureza do diff (`feat`/`fix`/`refactor`/…) — ou pergunte se ambíguo — e,
-  sem spec vinculada, monte o corpo do PR a partir do diff + dos commits da branch. **Não exija `/implement`.**
+Passou → **extraia o `ticket-id`** (`[A-Z][A-Z0-9]*-[0-9]+`) pra seção `Ticket` do corpo do PR
+(§6) e derive o tipo do commit de código pelo prefixo:
+
+- `feature/…` → **spec**: `feat:` por padrão; leia a spec vinculada em `docs/specs/` pro corpo.
+  Sem spec vinculada (branch feita à mão), monte o corpo a partir do diff + dos commits da branch
+  e infira o tipo pela natureza do diff (`feat`/`refactor`/…). **Não exija `/implement`.**
+- `bugfix/…` → **bug**: `fix:` por padrão.
+- `hotfix/…` → **bug em produção**: `fix:` por padrão; sugira a branch de produção como base (§1).
 
 ## 1. Escolha a base do PR — pergunte PRIMEIRO, antes de qualquer commit
 
