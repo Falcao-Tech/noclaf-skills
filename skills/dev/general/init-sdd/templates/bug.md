@@ -1,6 +1,7 @@
 ---
 title: <título curto do bug>
 status: open # open | fixed
+kind: bugfix # bugfix | hotfix (bug pesado em produção) — vira o prefixo da branch
 created: <YYYY-MM-DD>
 ---
 

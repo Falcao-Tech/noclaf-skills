@@ -58,7 +58,7 @@ dependências vão pro **Contexto** da descrição.
 
 **Exceção — só no GitHub:** a issue leva o **id da spec** como prefixo (`0011 · Veredito de
 review vira estado do ticket`). Não é código de workstream nem nome de repo: é a âncora que
-agrupa a lista de issues por spec e casa com o `<id>-<slug>` da branch. No **NOS** e no
+agrupa a lista de issues por spec e casa com o `<id>-<slug>` do arquivo da spec. No **NOS** e no
 registro local o título continua **sem** prefixo algum.
 
 ## Anti-obsolescência

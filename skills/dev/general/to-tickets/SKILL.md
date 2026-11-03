@@ -83,7 +83,7 @@ der e registre o que faltou.
 
   - **Título** — começa com o **id da spec**, depois `· ` e o título humano:
     `0011 · Descobrir boilerplates no catálogo`. É o que deixa a lista de issues agrupada por
-    spec e casa com o `<id>-<slug>` da branch. Sem spec de origem (descrição livre) → só o
+    spec e casa com o `<id>-<slug>` do arquivo da spec. Sem spec de origem (descrição livre) → só o
     título humano.
   - **Assignee** — `@me` sempre; quem fatia é o dono até reatribuírem.
   - **Type** — campo nativo, definido na **org**. Liste os válidos com
