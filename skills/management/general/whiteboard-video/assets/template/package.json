@@ -1,0 +1,13 @@
+{
+  "name": "whiteboard-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tts": "uv run --quiet --python 3.12 --with edge-tts python tools/tts.py",
+    "build": "python3 tools/build.py",
+    "check": "npx --yes hyperframes@0.8.84 check",
+    "snapshot": "npx --yes hyperframes@0.8.84 snapshot . -o review/shots --no-end --timeout 20000",
+    "preview": "npx --yes hyperframes@0.8.84 preview --background",
+    "render": "npx --yes hyperframes@0.8.84 render --fps 24 -o renders/video.mp4"
+  }
+}
