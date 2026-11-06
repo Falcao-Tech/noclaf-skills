@@ -1,0 +1,9 @@
+{
+  "API": "a pê í", "app": "ép", "HTTP": "agá tê tê pê", "key": "quí", "POST": "pôust", "retry": "ritrái", "URL": "u érre éle", "SQL": "ésse quê éle", "AWS": "a dáblio ésse", "backend": "béquiendi", "backoffice": "béquiófis", "branch": "brêntchi",
+  "cache": "quéche", "cron": "crôn", "dashboard": "déchibórdi", "deploy": "diplói", "endpoint": "ândpóint",
+  "frontend": "frôntiendi", "GitHub": "guíti râbi", "id": "aidí", "JSON": "djêison", "JWT": "jota dáblio tê",
+  "lambda": "lâmbida", "ledger": "lédjer", "login": "lóguin", "merge": "mérdji", "onboarding": "onbórdin",
+  "payload": "pêilôud", "PR": "pê érre", "QR": "quiu ár", "code": "côude", "Redis": "Rédis", "runner": "râner",
+  "SNS": "ésse êne ésse", "SQS": "ésse quê ésse", "timeout": "taimáuti", "token": "tôquen", "Valkey": "Válqui",
+  "webhook": "uébi rúqui", "worker": "uârquer"
+}
