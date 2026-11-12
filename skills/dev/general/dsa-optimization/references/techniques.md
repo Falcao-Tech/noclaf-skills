@@ -296,7 +296,7 @@ n ≈ 40 com subconjuntos: divida em duas metades de 20, enumere os 2²⁰ de ca
 
 ## Padrões práticos (Competitive Programmer's Handbook, Laaksonen)
 
-**Ordenar costuma ganhar da estrutura de dados com a mesma complexidade (CPHB 4.6).** No problema "quantos elementos de A estão em B" com n = 10⁶ (C++), as medições do livro foram: `set` 1,5 s; `unordered_set` 0,3 s; **ordenar os dois e percorrer com two pointers: 0,2 s**. As abordagens com `set` e com sort são ambas O(n log n), mas a com sort ficou ~10× mais rápida porque ordena uma vez e depois faz um laço linear, enquanto a outra mantém uma árvore balanceada o tempo todo. Regra: se os dados não mudam durante as queries, prefira **sort + busca binária ou varredura** a árvores balanceadas.
+**Ordenar costuma ganhar da estrutura de dados com a mesma complexidade (CPHB 4.6).** No problema "quantos elementos de A estão em B" com n = 10⁶ (C++), as medições do livro foram: `set` 1,5 s; `unordered_set` 0,3 s; **ordenar os dois e percorrer com two pointers: 0,2 s**. As abordagens com `set` e com sort são ambas O(n log n), mas a com sort ficou ~7× mais rápida porque ordena uma vez e depois faz um laço linear, enquanto a outra mantém uma árvore balanceada o tempo todo. Regra: se os dados não mudam durante as queries, prefira **sort + busca binária ou varredura** a árvores balanceadas.
 
 **Kadane (soma máxima de subarray) em O(n) (CPHB 2.4):**
 ```python

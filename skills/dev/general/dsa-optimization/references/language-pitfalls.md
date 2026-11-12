@@ -20,7 +20,7 @@ Cada linguagem tem estruturas que parecem O(1) e não são, e defaults que mudam
 | `//` arredonda para −∞ e `%` é sempre ≥ 0 com divisor positivo | ao portar de/para C/Java, os resultados com negativos mudam |
 | `int` arbitrário: não estoura, mas fica lento com números gigantes | aplique `% MOD` a cada passo                          |
 | `functools.lru_cache` exige argumentos hashable e segura memória | usar tuplas; `cache_clear()`; ou DP bottom-up        |
-| argumento default mutável (`def f(a=[])`)  | `def f(a=None): a = a or []`                                             |
+| argumento default mutável (`def f(a=[])`)  | `def f(a=None):` e `if a is None: a = []` (`a = a or []` troca uma lista vazia passada de propósito por outra) |
 | `dict`/`set` mudando de tamanho durante iteração → `RuntimeError` | iterar sobre `list(d)`                          |
 | `float('inf')` mistura com int (ok), mas `math.inf` em arrays numpy de int não | usar um int grande (`10**18`) em DP de inteiros |
 | `input()` lento                            | `data = sys.stdin.buffer.read().split()`; saída com `sys.stdout.write("\n".join(...))` |
@@ -37,7 +37,7 @@ Cada linguagem tem estruturas que parecem O(1) e não são, e defaults que mudam
 | 1 consulta por item de um lote (cliente, intervalo, pedido)   | 1 consulta para o lote inteiro (`__in`, GROUP BY) + estrutura em memória (prefix sums, bisect, two pointers) |
 | `TruncDate`/`TruncMonth` no **SQLite** viram função Python linha a linha (medido: 2,4× mais lento) | `Func(F(campo), function="DATE")` / `strftime` nativos no SQLite; manter `Trunc*` no Postgres |
 | `__in` com milhares de ids                                    | fatiar em lotes (~900 no SQLite antigo; Postgres aguenta mais, mas prefira join/subquery) |
-| `values().annotate()` agrupa errado com `Meta.ordering`        | `.order_by()` vazio antes de agrupar                            |
+| `values().annotate()` agrupa errado quando o `order_by()` usa campo fora do `values()` (até o Django 3.0, o `Meta.ordering` também entrava no GROUP BY) | ordenar só por campos agrupados ou anotados, ou `.order_by()` vazio antes de agrupar |
 | cache de resultado como "otimização"                          | só ajuda na 2ª chamada igual; a 1ª e as com argumentos novos pagam tudo, e o dado fica defasado até o TTL |
 | threads para paralelizar N+1                                  | o custo é por consulta; reduzir o número de consultas ganha 10–100× mais que paralelizar |
 | relatório que agrega a tabela inteira a cada request          | agregado mantido na escrita (tabela de totais, Fenwick) → leitura O(log n) |
@@ -48,7 +48,7 @@ Caso medido (Django + DRF, 200 mil pedidos): repositórios + cache + 4 threads: 
 
 | Armadilha                                              | Correção                                                        |
 |--------------------------------------------------------|-----------------------------------------------------------------|
-| `arr.sort()` sem comparator ordena **como string** (`[10, 9, 1]` → `[1, 10, 9]`) | `arr.sort((a, b) => a - b)` (cuidado com overflow só em BigInt/floats extremos) |
+| `arr.sort()` sem comparator ordena **como string** (`[10, 9, 1]` → `[1, 10, 9]`) | `arr.sort((a, b) => a - b)`; com BigInt, `a - b` não é Number e o `sort` lança `TypeError`: use `(a, b) => (a < b ? -1 : a > b ? 1 : 0)` |
 | `shift()` / `unshift()` O(n)                           | fila com índice `head` ou buffer circular                       |
 | `{}` como mapa: chaves viram string; `__proto__` e herança | `Map` / `Set`                                               |
 | `new Array(n).fill([])` compartilha a referência       | `Array.from({ length: n }, () => [])`                           |
@@ -69,7 +69,7 @@ Caso medido (Django + DRF, 200 mil pedidos): repositórios + cache + 4 threads: 
 |----------------------------------------------------------|---------------------------------------------------------------|
 | `Integer == Integer` compara referência (funciona até 127 por cache, quebra depois) | `.equals()` ou unboxing (`int`)          |
 | boxing em `List<Integer>` / `Map<Integer, Integer>` em laço quente | `int[]`, arrays primitivos, bibliotecas de coleções primitivas |
-| `Arrays.sort(int[])` (dual-pivot quicksort) tem pior caso O(n²) com entrada anti-quicksort | embaralhar antes, ou ordenar `Integer[]`/`long[]` via objetos (merge sort) |
+| `Arrays.sort(int[])` (dual-pivot quicksort) tem pior caso O(n²) com entrada anti-quicksort **até o JDK 13**; do JDK 14 em diante cai para heapsort quando a recursão fica funda (JDK-8226297) | em JDK ≤ 13: embaralhar antes, ou ordenar `Integer[]`/`Long[]` (objetos usam TimSort). `long[]` é primitivo e usa o mesmo quicksort |
 | comparator `(a, b) -> a - b` estoura                     | `Integer.compare(a, b)` / `Comparator.comparingInt`           |
 | `Stack` e `Vector` legados e sincronizados; `LinkedList` lento | `ArrayDeque` para pilha e fila                         |
 | `ArrayDeque` não aceita `null`                           | —                                                             |
@@ -138,7 +138,7 @@ Caso medido (Django + DRF, 200 mil pedidos): repositórios + cache + 4 threads: 
 | Armadilha                                                       | Correção                                                 |
 |-----------------------------------------------------------------|----------------------------------------------------------|
 | `List.RemoveAt(0)` / `Insert(0, x)` O(n)                        | `Queue<T>`, `LinkedList<T>` ou buffer circular           |
-| `PriorityQueue<TElement, TPriority>` (.NET 6+) sem decrease-key e sem remoção arbitrária | lazy deletion                     |
+| `PriorityQueue<TElement, TPriority>` (.NET 6+) sem decrease-key; `Remove` só a partir do .NET 9, e em O(n) | lazy deletion                     |
 | LINQ em laço quente (alocações, múltiplas enumerações)          | laços explícitos; `ToList()` uma vez                      |
 | `struct` como chave sem `Equals`/`GetHashCode` (reflexão lenta) | implementar `IEquatable<T>` ou usar `record struct`       |
 | `SortedSet`/`SortedDictionary`: `GetViewBetween`, `Min`, `Max`  | equivalentes de TreeSet/TreeMap                          |

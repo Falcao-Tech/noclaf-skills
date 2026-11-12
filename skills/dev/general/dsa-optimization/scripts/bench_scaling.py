@@ -20,6 +20,7 @@ construir a estrutura e aplicar as operações (meça só consultas, se for o ca
 gerando poucas escritas).
 """
 import argparse
+import copy
 import gc
 import importlib.util
 import math
@@ -48,13 +49,16 @@ def load(spec: str):
 
 
 def timed(fn, args, repeat):
+    """Melhor de `repeat`. Cada execução recebe uma cópia nova dos argumentos (fora do tempo medido),
+    para que uma versão que altera a entrada (ex.: a.sort()) não distorça as medições seguintes."""
     best = math.inf
     for _ in range(repeat):
+        call_args = copy.deepcopy(args)
         gc.collect()
         gc.disable()
         try:
             t = time.perf_counter()
-            fn(*args)
+            fn(*call_args)
             best = min(best, time.perf_counter() - t)
         finally:
             gc.enable()
@@ -133,9 +137,20 @@ def print_comparison(impls, data):
     print(f"\nem n={n:,}: mais rápido = {fastest}; {others}")
 
 
+def labels(specs: list[str]) -> list[str]:
+    """Nome curto (função) quando é único; `arquivo:função` quando dois arquivos têm a mesma função."""
+    if len(set(specs)) != len(specs):
+        sys.exit("--impl repetido: cada versão deve aparecer uma vez")
+    funcs = [s.rpartition(":")[2] for s in specs]
+    full = [f"{Path(s.rpartition(':')[0]).stem}:{f}" for s, f in zip(specs, funcs)]
+    if len(set(full)) != len(full):
+        return specs
+    return [f if funcs.count(f) == 1 else fl for f, fl in zip(funcs, full)]
+
+
 def main():
     a = parse_args()
-    impls = [(s.rpartition(":")[2], load(s)) for s in a.impl]
+    impls = [(name, load(spec)) for name, spec in zip(labels(a.impl), a.impl)]
     gen = load(a.gen)
     data = {name: [] for name, _ in impls}
     alive = {name for name, _ in impls}

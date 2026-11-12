@@ -21,7 +21,7 @@
 - **Swap-and-pop:** remove em O(1) quando a ordem não importa (`a[i] = a[-1]; a.pop()`).
 - **Remove-erase / filtro em uma passada:** remover vários elementos custa O(n) no total, contra O(n²) com `erase` repetido.
   ```cpp
-  v.erase(std::remove_if(v.begin(), v.end(), pred), v.end());   // C++17
+  v.erase(std::remove_if(v.begin(), v.end(), pred), v.end());   // C++98; no C++20: std::erase_if(v, pred)
   std::erase_if(v, pred);                                        // C++20
   ```
 - **Structure of Arrays** (`xs[]`, `ys[]`) em vez de Array of Structs em loops que leem só um campo.
