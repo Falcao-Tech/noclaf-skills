@@ -6,6 +6,7 @@ Pra escrever, revisar e projetar código. Agrupadas por **stack** — a pasta é
 
 - [caveman](general/caveman/SKILL.md) — resposta ultra-comprimida (~75% menos tokens).
 - [council](general/council/SKILL.md) — conselho de 5 lentes que mata concordância fácil numa decisão.
+- [dsa-optimization](general/dsa-optimization/SKILL.md) — otimiza estruturas de dados e algoritmos: escolhe a estrutura por operação (inclusive híbridos), decide entre escalar ou trocar o algoritmo e valida com stress test e benchmark. Referências por tema em [references/](general/dsa-optimization/references/).
 - [drytify](general/drytify/SKILL.md) — acha e remove duplicação real de código (DRY com bom senso).
 - [get-prompt](general/get-prompt/SKILL.md) — pedido, tarefa do NOS ou issue → prompt pra IA que escreve o código (Lovable, Bolt, Codex…), com reuso, NÃO FAÇA, critérios e testes; depois revisa a entrega. Contrato do projeto no `AGENTS.md`/`CLAUDE.md`.
 - [grill-me](general/grill-me/SKILL.md) — te sabatina sobre um plano/design até resolver cada decisão.

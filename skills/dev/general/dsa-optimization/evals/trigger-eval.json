@@ -1,0 +1,22 @@
+[
+  {"query": "nosso endpoint GET /ranking/me tá levando quase 2s com 800k usuários e o time quer subir redis + mais 3 réplicas da api. antes disso dá pra resolver no código? o handler tá em src/ranking/service.py e faz sorted() de todos os scores a cada request pra achar a posição", "should_trigger": true},
+  {"query": "to tomando TLE no problema do codeforces 1520D, n vai até 2e5 e meu código é O(n²) com dois for testando se a[j]-a[i] == j-i. como baixo isso?", "should_trigger": true},
+  {"query": "implement a rate limiter middleware for our express api: 100 requests per minute per api key, must be a true sliding window (not fixed buckets), we peak at ~5k rps on a single node", "should_trigger": true},
+  {"query": "preciso de autocomplete na busca de produtos (uns 2 milhões de nomes) no backend em go. hoje é um LIKE 'abc%' no postgres e passa de 800ms. qual estrutura monto em memória?", "should_trigger": true},
+  {"query": "o worker de jobs agendados varre a tabela inteira (300k jobs) a cada segundo procurando os que já venceram e a CPU fica em 90%. como melhoro isso sem enfiar kafka no meio?", "should_trigger": true},
+  {"query": "revisa minha implementação de union-find em C++, tá dando componente errado em alguns testes:\nint find(int x){ return p[x]==x ? x : find(p[x]); }\nvoid unite(int a,int b){ p[a]=b; }", "should_trigger": true},
+  {"query": "tenho um script python que lê um csv de 5M linhas de transações (cliente_id, data, valor) e pra cada linha conta quantas transações do mesmo cliente aconteceram nos 30 dias anteriores. tá rodando há 3 horas, como acelero?", "should_trigger": true},
+  {"query": "qual estrutura de dados usar num sistema de reserva de salas pra checar conflito de horário rápido? cada sala tem milhares de reservas e a checagem hoje compara com todas", "should_trigger": true},
+  {"query": "my dijkstra in java returns wrong distances when there are parallel edges and on one test it seems to never finish. using PriorityQueue<int[]> and a visited array, can you find the bug?", "should_trigger": true},
+  {"query": "a gente recalcula o score dos 1M jogadores toda madrugada e depois o app só consulta posição o dia inteiro. com dict a escrita é rápida mas a consulta é lenta, com fenwick a consulta voa mas recalcular tudo fica lento. como combinar as duas coisas?", "should_trigger": true},
+  {"query": "configura um redis cluster com 3 masters e 3 réplicas no docker-compose do ambiente de staging, com persistência AOF e senha via env", "should_trigger": false},
+  {"query": "a query SELECT * FROM orders WHERE customer_id = $1 AND status = 'open' tá lenta no postgres, o EXPLAIN mostra seq scan. cria o índice certo e a migration do alembic", "should_trigger": false},
+  {"query": "explica a diferença entre stack e heap de memória em C: onde ficam as variáveis locais, o que o malloc faz e por que dá stack overflow com array grande local", "should_trigger": false},
+  {"query": "meu componente React re-renderiza a lista inteira de 200 itens toda vez que digito no input de filtro e a tela pisca. como resolvo?", "should_trigger": false},
+  {"query": "escreve testes unitários com vitest pra classe LinkedList em src/utils/list.ts cobrindo insertAt, removeAt e o caso de lista vazia", "should_trigger": false},
+  {"query": "o build do webpack tá demorando 4 minutos no CI, já tentei cache do node_modules. o que mais dá pra fazer?", "should_trigger": false},
+  {"query": "monta um diagrama da arquitetura do nosso sistema de filas (SQS + 3 lambdas + dynamo) pra eu apresentar amanhã pro time", "should_trigger": false},
+  {"query": "gera um SVG bonito do grafo de dependências entre os pacotes do monorepo pra colocar na documentação", "should_trigger": false},
+  {"query": "minha API node tá com memory leak, o heap vai de 200MB pra 2GB em umas 6 horas. como acho o que tá vazando?", "should_trigger": false},
+  {"query": "traduz pro português esse artigo em inglês sobre B-trees em bancos de dados, mantendo os termos técnicos: https://example.com/btree-article", "should_trigger": false}
+]
