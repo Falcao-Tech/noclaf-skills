@@ -1,0 +1,3 @@
+interface:
+  display_name: "DSA Optimization"
+  short_description: "Estrutura certa por operação, escalar vs otimizar, stress test e benchmark"
