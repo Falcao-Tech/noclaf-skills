@@ -21,6 +21,7 @@ noclaf sync --agent otavio   # dentro do worktree do ticket
 - [otavio](otavio.md) — back-end, monorepo, migrations e infra (Opus).
 - [olivia](olivia.md) — front-end e mobile (Opus).
 - [bruce](bruce.md) — QA funcional, sem edição (Sonnet).
+- [lorem](lorem.md) — revisão de código das partes em `code_review`, com a skill `pr-review`, sem edição (Opus). Nome provisório.
 
 ## Limite do deny
 
