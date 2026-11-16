@@ -13,6 +13,7 @@ Pra escrever, revisar e projetar código. Agrupadas por **stack** — a pasta é
 - [handoff](general/handoff/SKILL.md) — compacta a conversa num doc de continuidade pra outro agente.
 - [init-sdd](general/init-sdd/SKILL.md) — monta a estrutura SDD (`docs/`, templates, `AGENTS.md`) no repo; ao analisar, semeia specs em `draft` e ADRs em `proposed`. Templates em [templates/](general/init-sdd/templates/).
 - [new-boilerplate](general/new-boilerplate/SKILL.md) — registra um repo como boilerplate do `init` (ponteiro `BOILERPLATE.md`) a partir do link.
+- [pr-review](general/pr-review/SKILL.md) — review de PR com veredito e severidade (skill do Lorem, revisor do turno da noite).
 - [review-changes](general/review-changes/SKILL.md) — review de qualidade/limpeza do diff (não caça bug).
 - [to-briefing](general/to-briefing/SKILL.md) — vira um briefing/questionário em Markdown pra outra pessoa (cliente, PM, outro time) preencher.
 - [to-doc](general/to-doc/SKILL.md) — cria um doc do SDD (spec/bug/adr) e para. Status por tipo: spec `draft | ready | in-progress | done` · bug `open | fixed` · adr `proposed | accepted | superseded`. Padrões por tipo: [SPEC](general/to-doc/SPEC-PATTERN.md) · [BUG](general/to-doc/BUG-PATTERN.md) · [ADR](general/to-doc/ADR-PATTERN.md).
