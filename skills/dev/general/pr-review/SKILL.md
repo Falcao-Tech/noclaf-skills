@@ -1,7 +1,7 @@
 ---
 id: 44
 name: pr-review
-description: Review de PR com veredito — lê o diff E o código que ele toca, confere contra o harness do repo e os critérios do ticket, classifica cada achado por severidade (crítico, alto, médio, baixo) e aprova só sem crítico nem alto. Read-only. É a skill do Lorem, o revisor de código do turno da noite, e serve para qualquer revisão de PR que precise de veredito. Use quando pedirem "revisa esse PR", "faz o code review" ou quando o Lorem pegar uma parte em code_review.
+description: Review de PR com veredito — lê o diff E o código que ele toca, confere contra o harness do repo e os critérios do ticket, classifica cada achado por severidade (crítico, alto, médio, baixo) e aprova só sem crítico nem alto. Read-only. É a skill do Salem, o revisor de código do turno da noite, e serve para qualquer revisão de PR que precise de veredito. Use quando pedirem "revisa esse PR", "faz o code review" ou quando o Salem pegar uma parte em code_review.
 effort: high
 allowed-tools: Bash, Read, Grep, Glob
 ---
