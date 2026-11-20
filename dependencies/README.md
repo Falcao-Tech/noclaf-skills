@@ -25,5 +25,6 @@ O que declaramos localmente (em `skills/`, `commands/`, `agents/`) **tem priorid
 - [vercel-react-best-practices](vercel-react-best-practices.md) — reforça `rules/front-end/rules.md`.
 - [vercel-composition-patterns](vercel-composition-patterns.md) — reforça `rules/front-end/ssr-rules.md`.
 - [shadcn](shadcn.md) — reforça `rules/front-end/lovable-rules.md` (UI).
+- [shadcn (vite)](dev/front-end/vite/shadcn.md) — reforça `rules/dev/front-end/vite/rules.md` (UI).
 - [supabase-postgres-best-practices](supabase-postgres-best-practices.md) — reforça `rules/front-end/lovable-rules.md` (dados/RLS).
 - [domain-modeling](domain-modeling.md) — reforça `rules/back-end/rules.md`.
