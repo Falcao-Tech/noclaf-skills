@@ -26,6 +26,7 @@ Cada arquivo tem frontmatter com `title`, `description`, `applies-to` e `extends
 ### front-end/
 - [rules](front-end/rules.md) — baseline: tipos/schemas fora do componente, server-state vs UI-state, a11y, loading/erro/vazio.
 - [lovable-rules](front-end/lovable-rules.md) — house-style Lovable/React: ShadcnUI + Tailwind, TanStack Query/Form + Zod, Axios, Supabase/RLS.
+- [vite](dev/front-end/vite/rules.md) — SPA React + Vite sobre API própria: sessão (access em memória, refresh em cookie), uma request por tela, sem SDK de banco no front.
 - [ssr-rules](front-end/ssr-rules.md) — SSR (Next/TanStack): fronteira server/client, data-fetching no server, cache, params por schema.
 
 ### mobile/
