@@ -57,6 +57,12 @@ Convenções e knowledge de projeto que o agente segue como regra (não são mod
 
 - [lovable-knowledge](rules/lovable-knowledge.md) — stack e convenções de front-end (ShadCN, TanStack, Tailwind, pt-BR).
 
+## Playbooks
+
+Processos de várias fases que vivem em repo próprio (não são sincronizados para o worker).
+
+- [lovable-migration-template](https://github.com/Falcao-Tech/lovable-migration-template) — tira um projeto da Lovable/Supabase para a stack Noclaf (`<proj>-api` Django, `<proj>-web` Vite ou Next, `<proj>-ai` noclaf-ai). Repo-template com playbook, modelos de docs e scripts (inventário, ETL, ensaio, EventBridge).
+
 ## Como chega no worker
 
 ```
