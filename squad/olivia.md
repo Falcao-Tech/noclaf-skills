@@ -23,6 +23,7 @@ ticket e devolve para `todo`.
   "permissions": {
     "allow": [
       "Bash",
+      "Skill",
       "Read",
       "Edit",
       "Write",

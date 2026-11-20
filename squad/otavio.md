@@ -22,6 +22,7 @@ vêm do harness do próprio repo (`docs/_rules/noclaf.md`), escrito pelo `noclaf
   "permissions": {
     "allow": [
       "Bash",
+      "Skill",
       "Read",
       "Edit",
       "Write",

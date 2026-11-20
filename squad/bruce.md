@@ -28,6 +28,7 @@ worktree do QA ser descartado e o Bruce não conseguir commitar nem dar push.
   "permissions": {
     "allow": [
       "Bash",
+      "Skill",
       "Read",
       "Glob",
       "Grep",
